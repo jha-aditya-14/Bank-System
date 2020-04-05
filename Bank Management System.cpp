@@ -25,7 +25,7 @@ class Bank
 {
 public:
     string account_number;
-	string name;
+    string name;
     string dob;
     string age;
     string date;
