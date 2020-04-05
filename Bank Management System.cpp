@@ -1188,7 +1188,7 @@ void menu_c(void)
     menu:
     system("cls");
     system("color 2");
-	cout<<"\n\n\t\t\tBANK RECORD SYSTEM";
+	cout<<"\n\n\t\t\tBANK SYSTEM";
     cout<<"\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 WELCOME"
 		<<" TO THE MAIN MENU \xB2\xB2\xB2\xB2\xB2\xB2\xB2";
     cout<<"\n\n\t\t1.Create new account\n";
@@ -1262,7 +1262,7 @@ int main()
 	system("cls");
 	system("color 4");
 	cout<<"\t\t\t ---------------------"<<endl;
-	cout<<"\t\t\t|  BANK OF INDIA |"<<endl;
+	cout<<"\t\t\t|  GA OF INDIA |"<<endl;
 	cout<<"\t\t\t ---------------------"<<endl;
 	system("color 3");
 	cout<<"\n\n\t\t\t\t MENU\n";
