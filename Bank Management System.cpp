@@ -1,1287 +1,1136 @@
+#include<iostream>
+#include<conio.h>
+#include<stdlib.h>
+#include<fstream>
+#include<iomanip>
+#include<string>
+#include<cstring>
+#include<cstdlib>
+#include<sstream>
+#include<time.h>
 
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include <string.h>
-#include <iomanip>
-#include <cstdio>
-#include <conio.h>
-#include <ctime>
-#include <stdlib.h>
-#include <bits/stdc++.h>
+
 
 using namespace std;
 
+void temp_file_clear();
+void copy_content(string a,string b);
+void number_system_put(int n1);
+int number_system_get();
+string yearadd(string date1,int year) ;
+void user_menu(int);
+void clrscr();
 
-void fordelay(int);
-void close(void);
-int main();
-void menu_e();
-void employee();
-void customer();
-void menu_c();
+void clrscr()
+    {
+    cout << string( 100, '\n' );
+    }
 
-class Bank
+
+
+class user
 {
-public:
-    string account_number;
-    string name;
-    string dob;
-    string age;
-    string date;
-    string address;
-    string phone;
-    string doc;
-    string depo;
-    string acc_type;
-    string password;
-    string interest;
-public:
-    void read_data();
-    void acc_write();
-	void modify_account();
-	void search_rec();
-	void deposit_withdraw();
-	void display_all();
-	void transfer();
+	public:
+
+	char fname[10],lname[10];
+	string phone;
+	string dob;
+
+		user()
+		{
+			phone = '\0';
+			dob = '\0';
+		}
+		~user()
+		{}
 };
 
-float inter(float t,float amount,int rate)
+class Account : public user
 {
-    float SI;
-    SI=(rate*t*amount)/100.0;
-    return (SI);
-}
-
-void Bank::read_data()
-{
-	int x,i=0;
-	string acc_no;
-	Retry:
-	cout<<"\nEnter Account Number: ";
-    cin>>account_number;
-    ifstream is("Account_info.csv");
-    do
-    {
-       	getline(is,acc_no, ',');
-       	getline(is,password, '\n');
-    	if(acc_no == account_number)
-    	{
-    		cout<<"\nAccount No. Matches with Existing Account!";
-    		cout<<"\n1. Try Again!\n2. Login To Account";
-    		cin>>x;
-    		if(x == 1)
-    			goto Retry;
-    		else
-    			customer();
-    	}
-    	break;
-	}while(is.good());
-    fflush(stdin);
-    cout<<"\nEnter Name: ";
-    getline(cin,name);
-    cout<<"\nEnter the  of birth(mm/dd/yyyy):";
-    fflush(stdin);
-	cin>>dob;
-    cout<<"\nEnter the age:";
-    cin>>age;
-    cout<<"\nEnter the address:";
-    fflush(stdin);
-	getline(cin,address);
-    cout<<"\nEnter the phone number: ";
-    fflush(stdin);
-    cin>>phone;
-    cout<<"\nYou want to deposit amount:\n\t1.Yes\n\t2.No\n:";
-    cin>>x;
-    if(x == 1)
-    {
-    	cout<<"\nEnter the amount to deposit: Rs ";
-		cin>>depo;    	
-	}
-	else
+	int accountNumber ;
+	int passcode ;
+	int balance;
+	string type;
+	public:
+	Account()
 	{
-		depo = to_string(0);
+		accountNumber = 0;
+		balance = 0;
+		passcode = 0;
 	}
-    cout<<"\nType of account:\n\t#Saving\n\t#Current\n\n\tEnter your choice:";
-    fflush(stdin);
-	cin>>acc_type;    
-    cout<<endl;
-    time_t now = time(0);
-    string dt = ctime(&now);
-    cout<<"\nDate and Time of Account Creation:" << dt << endl;
-    date = dt;
-	struct tm *ltm = localtime(&now);
-    doc = to_string(ltm->tm_mday);
-    doc = doc.substr(0, doc.size()-1);
-    interest = to_string(i++);
-    cout<<"\nEnter Password For Your Account:";
-    cin>>password;
-    printf("\nAccount created successfully!");
-    login_try:
-    cout<<"\n\nEnter 1. For Main Menu\n\t2. For Previous Menu and 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
-	}
-	else if (main_exit == 2)
-	{
-		system("cls");
-		menu_c();
-	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
-	}
-}
-void Bank::acc_write()
-{
-	ofstream MyFile1, MyFile2;
-	read_data();
-	//Aditya Jha -------------------------------------------------------
-	MyFile1.open("Bank_Record.csv", ios::out|ios::app);
-	MyFile1<<account_number<<","<<name<<","<<dob<<","
-		   <<age<<","<<address<<","<<phone<<","<<depo
-		   <<","<<acc_type<<","<<date<<","<<doc<<","<<interest<<"\n";
-	MyFile1.close();
-	MyFile2.open("Account_info.csv", ios::out|ios::app);
-	MyFile2<<account_number<<","<<password<<","<<"\n"; 
-	MyFile2.close();
-}
+	~Account(){}
 
-void Bank::modify_account()
+	void CurrentBalance(int);
+	void createAccount();
+	void showDetails();
+	void searchDetails(int);
+	void delete_details();
+	void update_details(int);
+	void login_user(int,int);
+	void add(int,int);
+	void deduct(int,int);
+	void fd(int);
+	void viewFD(int);
+	void viewTr(int);
+	void fund_tr(int);
+	void ministatement(int);
+};
+
+void Account :: login_user(int user, int pass)
 {
-	Bank ac;
-	int test = 0;
-	string acc_no;
-	cout<<"For Verification:\n";
-	cout<<"Enter the Account Number again:";
-	cin>>acc_no;
-	ifstream is("Bank_Record.csv");
-    do
-    {
-       	getline(is,account_number, ',');
-       	getline(is, name, ',');
-       	getline(is, dob, ',');
-       	getline(is, age, ',');
-       	getline(is, address, ',');
-      	getline(is, phone, ',');
-       	getline(is, depo, ',');
-      	getline(is, acc_type, ',');
-      	getline(is, date, ',');
-      	getline(is, doc,',');
-      	getline(is, interest, '\n');
-        if(acc_no == account_number)
-    	{   
-    		test = 1;
-			cout<<"\nAccount NO.:"<<account_number<<endl;
-			cout<<"\nName:" <<name<<endl;
-			cout<<"\nDOB:" <<dob<<endl;
-			cout<<"\nAge:" <<age<<endl;
-			cout<<"\nAddress: "<<address<<endl;
-			cout<<"\nPhone number:"<<phone<<endl;
-			cout<<"\nType Of Account:"<<acc_type<<endl;
-			cout<<"\nDate of Account creation:"<<date<<endl;
-			cout<<"\nAmount deposited:"<<depo<<endl;
+	int flag = 0;
+
+
+	ifstream file_read("cus_details.txt" ,ios::in);
+	while(!file_read.eof())
+	{
+
+		file_read >> fname;
+		file_read >>lname;
+		file_read >>phone;
+		file_read >>dob;
+		file_read >>type;
+		file_read >>accountNumber;
+		file_read >>passcode;
+		file_read >>balance;
+		if(file_read.eof())
+		{
 			break;
-        }
-	}while (is.good());
-	is.close();
-	string x, y, z;
-	int choice;
-	int opt;
-	if(test == 1)
-	{
-		ifstream file ("Bank_Record.csv");
-		ofstream ofile ("temp.csv");
-		do{
-		cout<<"\n\n\n\t\t1.Update Name\n";
-    	cout<<"\t\t2.Update dob Of Birth\n";
-    	cout<<"\t\t3.Update Age\n";
-    	cout<<"\t\t4.Update Address\n";
-    	cout<<"\t\t5.Update Phone No.\n";
-    	cin>>choice;
-    	switch(choice)
-    	{
-        case 1:	system("color 3");
-        		cout<<"\t\tUpdate Name\n\n";
-				cout<<"Enter Old Name: ";
-        		cin>>y;
-        		cout<<"Enter New Name: ";
-        		cin>>z;
-				while (!file.eof())
-				{	
-					getline(file,x,',');
-    				if (x == y)
-        				ofile << z <<",";
-    				else
-        				ofile << x << ",";
-				}
-        		break;
-        case 2:system("color 4");
-        		cout<<"\t\tUpdate dob Of Birth\n\n";
-				cout<<"Enter Old dob Of Birth(mm/dd/yyyy): ";
-        		cin>>y;
-        		cout<<"Enter New dob Of Birth(mm/dd/yyyy): ";
-        		cin>>z;
-				while (!file.eof())
-				{	//Aditya Jha------------------------------------------------------------------------------------------------------------------
-					getline(file,x,',');
-    				if (x == y)
-        				ofile << z <<",";
-    				else
-        				ofile << x << ",";
-				}
-        		break;
-    	case 3:system("color 5");
-    			cout<<"\t\tUpdate Age\n\n";
-				cout<<"Enter Old Age: ";
-        		cin>>y;
-        		cout<<"Enter New Age: ";
-        		cin>>z;
-				while (!file.eof())
-				{	
-					getline(file,x,',');
-    				if (x == y)
-        				ofile << z <<",";
-    				else
-        				ofile << x << ",";
-				}
-        		break;
-        case 4:system("color 6");
-				cout<<"\t\tUpdate Address\n\n";
-				cout<<"Enter Old Address: ";
-        		cin>>y;
-        		cout<<"Enter New Address: ";
-        		cin>>z;
-				while (!file.eof())
-				{	
-					getline(file,x,',');
-    				if (x == y)
-        				ofile << z <<",";
-    				else
-        				ofile << x << ",";
-				}
-        		break;
-        case 5:system("color 2");
-				cout<<"\t\tUpdate Phone No.\n\n";
-				cout<<"Enter Old Phone No. : ";
-        		cin>>y;
-        		cout<<"Enter New Phone No. : ";
-        		cin>>z;
-				while (!file.eof())
-				{	
-					getline(file,x,',');
-    				if (x == y)
-        				ofile << z <<",";
-    				else
-        				ofile << x <<",";
-				}
-        		break;
-        default: cout<<"Invalid Input";
 		}
-		
-		remove("Bank_Record.csv");
-   		rename("temp.csv","Bank_Record.csv");	
-		file.seekg(0, ios::beg);
-		ofile.seekp(0, ios::beg);
-		cout<<"\n\n\t\tDo You Want Update Any Other Field :"
-				<<"\n\t\t1: YES\n\t\t2: NO\n";
-		cin>>opt;
-	}while(opt!=2);
-	file.close();
-	ofile.close();
+		if(user == accountNumber && pass == passcode)
+		{
+			cout<<"\n Login sucessful !"<<endl;
+			user_menu(user);
+			flag = 1;
+		}
+
+	}
+
+	if(flag == 0 )
+	{
+		cout<<"\n User name & Passcode Not matched !"<<endl;
+
+	}
+	file_read.close();
+
+}
+
+void Account :: createAccount()
+{
+
+	cout << "\n\tEnter your First name :";
+	cin >>fname;
+	cin.clear();
+
+	cout << "\n\tEnter Last name :";
+	cin >>lname;
+	cin.clear();
+
+	string temp_phone;
+	cout << "\n\tEnter phone number :";
+	cin >>temp_phone;
+	cin.clear();
+	if(temp_phone.length()==10)
+	{
+		phone = temp_phone;
+
 	}
 	else
 	{
-		cout<<"\nAccount Doesn't Exist";
+
+		while(temp_phone.length() != 10)
+		{
+			cout<<"phone number must be 10 digit\n";
+			cout<<"\n input chone number:";
+			cin >> temp_phone;
+			phone = temp_phone;
+		}
 	}
-	login_try:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Previous Menu and" 
-			<<" 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    //Aditya--------------------------------------------------------------
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
-	}
-	else if (main_exit == 2)
+
+
+
+	cout << "\n\tEnter Date of Birth :";
+	cin >>dob;
+	cin.ignore();
+
+	char atype ='\0';
+	cout <<"\n\tSelect Account Type(Savings S/Other O) :";
+	cin >>atype;
+	if(tolower(atype) == 's' )
 	{
-		system("cls");
-		menu_c();
+		type = "SAVINGS";
 	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
+	else
+	{
+		type = "OTHER";
 	}
+	accountNumber = number_system_get();
+
+	cout << "\n\t Your Account Number :"<<accountNumber;
+
+	cout << "\n\t Enter 4 digit Passcode ::";
+	cin >> passcode;
+
+	cout <<"\n\t Enter Primary Balance :";
+	cin >>balance;
+
+	ofstream file("cus_details.txt",ios::out | ios :: app);
+	file << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+
+	number_system_put(accountNumber);
+	file.close();
 }
 
-void Bank::search_rec()
+void Account :: CurrentBalance(int user_no)
 {
-    int test=0,rate;
-    int choice, date1;
-    float t;
-    string intrst, x, y;
-    int amount, b;
-    string acc_no, name_s;
-    ifstream is("Bank_Record.csv");
-    
-    cout<<"Do you want to check by\n1.Account no\n2.Name"
-			<<"\nEnter your choice:";
-    cin>>choice;
-    if (choice==1)
-    {   
-		cout<<"Enter the account number:";
-        cin>>acc_no;
-        do
-        {
-        	getline(is,account_number, ',');
-       		getline(is, name, ',');
-       		getline(is, dob, ',');
-       		getline(is, age, ',');
-       		getline(is, address, ',');
-      		getline(is, phone, ',');
-       		getline(is, depo, ',');
-      		getline(is, acc_type, ',');
-      		getline(is, date, ',');
-      		getline(is, doc,',');
-      		getline(is, interest,'\n');
-        	amount = atoi(depo.c_str());
-    		if(acc_no == account_number)
-    		{
-    			test = 1; system("cls");   
-				cout<<"\nAccount NO.:"<<account_number<<endl;
-				cout<<"\nName:" <<name<<endl;
-				cout<<"\nDOB:" <<dob<<endl;
-				cout<<"\nAge:" <<age<<endl;
-				cout<<"\nAddress: "<<address<<endl;
-				cout<<"\nPhone number:"<<phone<<endl;
-				cout<<"\nType Of Account:"<<acc_type<<endl;
-				cout<<"\nDate of Account creation:"<<date<<endl;
-				cout<<"\nAmount deposited:"<<depo<<endl;
-				
-				ifstream file ( "Bank_Record.csv" );
-				ofstream ofile ( "temp.csv" );
-				
-            	if(acc_type == "Saving")
-                {
-                	time_t now = time(0);
-					struct tm *ltm = localtime(&now);
-					date1 = ltm->tm_mday;
-                    if(date1 != atoi(doc.c_str()))    
-					{
-						t = date1 - atoi(doc.c_str());
-						rate=15;
-						intrst=std::to_string(inter(t,amount,rate));						
-						cout<<"\n\nYou will get Rs " <<intrst
-								<<" as interest";
-						file.clear();
-						while (!file.eof())
-						{		
-							getline(file,x,',');
-    						if (x == interest)
-        						ofile << intrst <<",";
-    						else if(x == depo)
-        					{
-        					y=(atoi(depo.c_str())+atoi(intrst.c_str()));
-        					ofile << y << ",";
-							}	
-        					else
-        						ofile << x <<","; 
-						}
-					}	
-					else
-					{
-						cout<<"\n\nYou will get Rs 0 as interest"
-								<<" for today...";
-					}
-					break;                    
-                }
-                else if(acc_type == "Current")
-                {
-                    time_t now = time(0);
-					struct tm *ltm = localtime(&now);
-					date1 = ltm->tm_mday;
-                    if(date1 != atoi(doc.c_str()))    
-					{//Aditya--------------------------------------------------------------
-						t = date1 - atoi(doc.c_str());
-						rate=15;
-						intrst=std::to_string(inter(t,amount,rate));						
-						cout<<"\n\nYou will get Rs " <<intrst
-								<<" as interest";
-						file.clear();
-						while (!file.eof())
-						{		
-							getline(file,x,',');
-    						if (x == interest)
-        						ofile << intrst <<",";
-    						else if(x == depo)
-        					{
-        					y=(atoi(depo.c_str())+atoi(intrst.c_str()));
-        					ofile << y << ",";
-							}
-							else
-        						ofile << x <<","; 
-						}
-					}	
-					else
-					{
-						cout<<"\n\nYou will get Rs 0 as interest"
-								<<" for today...";
-					}
-					break;
-				}
-            }
-        }while (is.good());
-    }
-    else if (choice==2)
-    {   
-		cout<<"Enter the Name of Account Holder:";
-        cin>>name_s;
-        do
-        {
-        	getline(is,account_number, ',');
-       		getline(is, name, ',');
-       		getline(is, dob, ',');
-       		getline(is, age, ',');
-       		getline(is, address, ',');
-      		getline(is, phone, ',');
-       		getline(is, depo, ',');
-      		getline(is, acc_type, ',');
-      		getline(is, date, ',');
-      		getline(is, doc,',');
-      		getline(is, interest, '\n');
-        	amount = atoi(depo.c_str());
-    		if(name_s == name)
-            {   
-				test = 1; system("cls");   
-				cout<<"\nAccount NO.:"<<account_number<<endl;
-				cout<<"\nName:" <<name<<endl;
-				cout<<"\nDOB:" <<dob<<endl;
-				cout<<"\nAge:" <<age<<endl;
-				cout<<"\nAddress: "<<address<<endl;
-				cout<<"\nPhone number:"<<phone<<endl;
-				cout<<"\nType Of Account:"<<acc_type<<endl;
-				cout<<"\nDate of Account creation:"<<date<<endl;
-				cout<<"\nAmount deposited:"<<depo<<endl;
-				
-				ifstream file ( "Bank_Record.csv" );
-				ofstream ofile ( "temp.csv" );
-				
-            	if(acc_type == "Saving")
-                {
-                	time_t now = time(0);
-					struct tm *ltm = localtime(&now);
-					date1 = ltm->tm_mday;
-                    if(date1 != atoi(doc.c_str()))    
-					{
-						t = date1 - atoi(doc.c_str());
-						rate=15;
-						intrst=std::to_string(inter(t,amount,rate));						
-						cout<<"\n\nYou will get Rs " <<intrst
-								<<" as interest";
-						file.clear();
-						while (!file.eof())
-						{		
-							getline(file,x,',');
-    						if (x == interest)
-        						ofile << intrst <<",";
-    						else if(x == depo)
-        					{
-        					y=(atoi(depo.c_str())+atoi(intrst.c_str()));
-        					ofile << y << ",";
-							}
-							else
-        						ofile << x <<","; 
-						}
-					}	
-					else
-					{
-						cout<<"\n\nYou will get Rs 0 as interest "
-								<<"for today...";
-					}
-					break;                    
-                }
-                else if(acc_type == "Current")
-                {
-                    time_t now = time(0);
-					struct tm *ltm = localtime(&now);
-					date1 = ltm->tm_mday;
-                    if(date1 != atoi(doc.c_str()))    
-					{
-						t = date1 - atoi(doc.c_str());
-						rate=15;
-						intrst=std::to_string(inter(t,amount,rate));						
-						cout<<"\n\nYou will get Rs " <<intrst
-								<<" as interest";
-						file.clear();
-						while (!file.eof())
-						{		
-							getline(file,x,',');
-    						if (x == interest)
-        						ofile << intrst <<",";
-    						else if(x == depo)
-        					{
-        					y=(atoi(depo.c_str())+atoi(intrst.c_str()));
-        					ofile << y << ",";
-							}
-							else
-        						ofile << x <<","; 
-						}
-					}	
-					else
-					{
-						cout<<"\n\nYou will get Rs 0 as interest for today...";
-					}
-					break;
-				}
-            }
-        }while (is.good());
-    }
-    if(test == 0)
-    {
-    	cout<<"\n\n\t\tAccount doesn't Exist!";
-	}
-    remove("Bank_Record.csv");
-   	rename("temp.csv","Bank_Record.csv");	
-	is.close();
-    login_try:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Customer Menu\n\t"
-			<<"3. For Employee Menu and 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
-	}
-	else if (main_exit == 2)//Aditya--------------------------------------------------------------
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	while(file_read)
 	{
-		system("cls");
-		menu_c();
-	}
-	else if(main_exit == 3)
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
 	{
-		system("cls");
-		employee();
-	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
-	}
-}
-
-void Bank::deposit_withdraw()
-{
-	int choice,test=0,amt,amount;
-	string acc_no, y, x;
-    ifstream file ("Bank_Record.csv" );
-	ofstream ofile ("temp.csv" );
-	Bank ac;
-	cout<<"Enter the account number:";
-	cin>>acc_no;
-    do
-    {
-       	getline(file,account_number, ',');
-       	getline(file, name, ',');
-       	getline(file, dob, ',');
-       	getline(file, age, ',');
-       	getline(file, address, ',');
-      	getline(file, phone, ',');
-       	getline(file, depo, ',');
-      	getline(file, acc_type, ',');
-      	getline(file, date, ',');
-      	getline(file, doc,',');
-      	getline(file, interest, '\n');
-        amount = atoi(depo.c_str());
-    	if(acc_no == account_number)
-    	{   
-			test = 1;
-			cout<<"\nAccount No.:"<<account_number<<endl;
-			cout<<"\nName:" <<name<<endl;
-			cout<<"\nDOB:" <<dob<<endl;
-			cout<<"\nAge:" <<age<<endl;
-			cout<<"\nAddress: "<<address<<endl;
-			cout<<"\nPhone number:"<<phone<<endl;
-			cout<<"\nDate of Creation: "<<date<<endl;
-			cout<<"\nType Of Account:"<<acc_type<<endl;
-			cout<<"\nBalance:"<<depo<<endl;
-			test=1;
-            cout<<"\n\nDo you want to\n1.Deposit\n2.Withdraw?\n\n"
-			<<"Enter your choice(1 for deposit and 2 for withdraw):";
-            cin>>choice;
-            if (choice==1)
-            {//Aditya--------------------------------------------------------------
-                cout<<"Enter the amount you want to deposit: ";
-                cin>>amt;
-                file.seekg(0, ios::beg);
-                amt = atoi(depo.c_str()) + amt;
-                y = to_string(amt);
-                cout<<"\n\tBalance : "<<y;
-                int i=1;
-                while (file.good())
-				{	
-					getline(file,x,',');
-    				if (x == depo)
-        			{
-        				ofile << y <<",";
-					}	
-    				else
-        			{
-        				ofile << x <<",";
-					}	
-				}
-                printf("\n\nDeposited successfully!");
-            }
-            else
-            {
-                cout<<"Enter the amount you want to Withdraw: ";
-                cin>>amt;
-                file.seekg(0, ios::beg);
-                if(amt > atoi(depo.c_str()))
-                    cout<<"Not Enough Balance\n";
-                else
-                {
-                    amt = atoi(depo.c_str()) - amt;
-                    y =  std::to_string(amt);
-                    cout<<"\n\tBalance : "<<y;
-                    while (file.good())
-					{	
-						getline(file,x,',');
-    					if (x == depo)
-        					ofile << y <<",";
-    					else
-        					ofile << x <<",";
-        			}
-					printf("\n\nWithdrawn successfully!");        	
-				}
-            }
-        }
-   }while (file.good());
-   	file.close();
-	ofile.close();
-	remove("Bank_Record.csv");
-	rename("temp.csv","Bank_Record.csv");
-
-   if(test==0)
-   {
-    	cout<<"\n\nRecord not found!!";
-    	login_try:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Previous Menu and"
-			<<" 0 to try again:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        ac.deposit_withdraw();
-	}
-	else if (main_exit == 2)
-	{
-		system("cls");
-		employee();
-	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
-	}
-   }
-   else
-   {
-    login_try1:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Previous Menu "
-			<<"and 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {//Aditya--------------------------------------------------------------
-    	system("cls");
-        close();
-	}
-	else if (main_exit == 2)
-	{
-		system("cls");
-		menu_c();
-	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try1;
-	}
-   }
-
-}
-
-void Bank::display_all()
-{
-	int amount;
-	cout<<"\n\n\t\tACCOUNT HOLDER LIST\n\n";
-    cout<<"====================================================="
-	<<"========================================================="
-	<<"=========================\n";
-    cout<<"  Account No.\t\tName\t\tType\t\tBalance\t\tAddress"
-	<<"\t\tPhone No.\t\tCreation Date\n";
-    cout<<"====================================================="
-	<<"========================================================="
-	<<"=========================\n";
-    ifstream is("Bank_record.csv");
-	int i=1,sz=0,sz1=0;
-	char c;
-	is.seekg(0,ios::end);
-	sz=is.tellg();
-	//cout<<sz<<endl;
-	is.seekg(0,ios::beg);
-	while (!is.eof())
-    {
-    	cout<<i<<". ";
-    	i++;
-    	getline(is,account_number, ',');
-       	getline(is, name, ',');
-       	getline(is, dob, ',');
-       	getline(is, age, ',');
-       	getline(is, address, ',');
-      	getline(is, phone, ',');
-       	getline(is, depo, ',');
-      	getline(is, acc_type, ',');
-      	getline(is, date, ',');
-      	getline(is, doc,',');
-      	getline(is, interest,'\n');
-        amount = atoi(depo.c_str());
-        sz1=is.tellg();
-        //cout<<sz1<<" ";
-    	cout<<account_number<<"\t\t"<<name<<"\t\t"<<acc_type
-				<<"\t\t"<<amount<<"\t\t"<<address<<"\t\t"
-				<<phone<<"\t\t"<<date<<endl;
-		if(sz == (sz1))
 		break;
 	}
-	login_try:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Previous Menu "
-			<<"and 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
+
+	if(user_no == accountNumber)
+	{
+
+		cout<<"\n\tCurrent Balance           :"<<balance<<"/-RS.";
+		cout<<"\n\n\n";
 	}
-	else if (main_exit == 2)
-	{//Aditya--------------------------------------------------------------
-		system("cls");
-		menu_e();
+
+
 	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
+
+	file_read.close();
+}
+void Account :: searchDetails(int user_no)
+{
+	int ch;
+	int flag = 0;
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	while(file_read)
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
 	}
+
+	if(user_no == accountNumber)
+	{
+		cout<<"\n\tAccount Number is :"<<accountNumber;
+		cout<<"\n\tName              :"<<fname<<" "<<lname;
+		cout<<"\n\tPhone             :"<<phone;
+		cout<<"\n\tDate of birth     :"<<dob;
+		cout<<"\n\tAccount Type      :"<<type;
+		cout<<"\n\tBalance           :"<<balance<<"/-RS.";
+		cout<<"\n\n\n";
+		flag  = 1;
+	}
+
+
+	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+
+	}
+	file_read.close();
+
+}
+void Account ::delete_details()
+{
+	char ch[10];
+	char buff;
+	int flag = 0;
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+	cout <<"\n\tEnter name:";
+	cin >>ch;
+	cin.clear();
+
+	while(!file_read.eof())
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+		if(strcmp(fname,ch) == 0)
+		{
+			cout <<fname<<" "<<lname<<"\t"<<dob<<"\t"<<phone<<"\t"<<type
+			<<"\t"<<accountNumber<<"\t"<<balance<<endl;
+			flag  = 1;
+		}
+		else{
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+		}
+
+	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+
+	}
+	file_temp.close();
+	file_read.close();
+	copy_content(b,a);
+
+	cout<<"\n\t Done Account Is Removed !\n";
+	temp_file_clear();
+
 }
 
-void Bank::transfer()
+void Account :: add(int user_no,int amt)
 {
-	int amount,amt, test = 0;
-	string acc_no, y, x;
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+	char tr_date[9];
+
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+	ofstream tr_write("transec.txt",ios::out | ios::app);
+	while(!file_read.eof())
 	{
-	ifstream file ("Bank_Record.csv" );
-	ofstream ofile ("temp.csv" );
-	Bank ac;
-	cout<<"Enter Your account number:";
-	cin>>acc_no;
-    do
-    {
-       	getline(file,account_number, ',');
-       	getline(file, name, ',');
-       	getline(file, dob, ',');
-       	getline(file, age, ',');
-       	getline(file, address, ',');
-      	getline(file, phone, ',');
-       	getline(file, depo, ',');
-      	getline(file, acc_type, ',');
-      	getline(file, date, ',');
-      	getline(file, doc,',');
-      	getline(file, interest,'\n');
-		if(acc_no == account_number)
-    	{   
-    		test = 1;
-			cout<<"Account No.:"<<account_number<<endl;
-			cout<<"Name:" <<name<<endl;
-			cout<<"DOB:" <<dob<<endl;
-			cout<<"Age:" <<age<<endl;
-			cout<<"Address: "<<address<<endl;
-			cout<<"Phone number:"<<phone<<endl;
-			cout<<"Type Of Account:"<<acc_type<<endl;
-			cout<<"Balance:"<<depo<<endl;
-			
-			cout<<"\nEnter the amount you want to transfer: ";
-   			cin>>amt;
-   			file.seekg(0, ios::beg);
-    		if(amt > atoi(depo.c_str()))
-    			cout<<"Not Enough Balance\n";
-    		else
-    		{
-       			amount = atoi(depo.c_str()) - amt;
-        		y =  std::to_string(amount);
-        		cout<<"\n\tBalance : "<<y;
-        		while (file.good())
-				{	
-					getline(file,x,',');
-    				if (x == depo)
-        				{
-           					ofile << y <<",";
-   						}
-        				else
-						{
-        					ofile << x <<",";
-        				}
-				}						
+
+	file_read >>fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == accountNumber)
+	{
+			balance = balance + amt;
+			_strdate(tr_date);
+
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+
+			tr_write<<accountNumber<<" "<<tr_date<<" "<<amt<<" "<<"CR"<<endl;
+
+	}
+	else
+	{
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+			<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+	}
+
+	}
+
+	file_temp.close();
+	file_read.close();
+	copy_content(b,a);
+	cout<<"\n\t Done ! Amount Added\n";
+	temp_file_clear();
+
+}
+void Account :: deduct(int user_no,int amt)
+{
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+	char tr_date[9];
+
+	int flag = 0;
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+	ofstream tr_write("transec.txt",ios::out | ios::app);
+	while(!file_read.eof())
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == accountNumber)
+	{
+			if(balance != 0 && balance > amt)
+			{
+
+				balance = balance - amt;
+				_strdate(tr_date);
+
+				file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+					<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+
+				tr_write<<accountNumber<<" "<<tr_date<<" "<<amt<<" "<<"DR"<<endl;
+
+				flag = 1;
 			}
+			else
+			{
+
+				cout<<"\nyour transection can not be completed balance is Zero or Less than wuthdrawal amount\n! ";
+				file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+			}
+	}
+
+	else
+	{
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+			<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+	}
+
+	}
+
+	file_temp.close();
+	file_read.close();
+	copy_content(b,a);
+	if(flag == 1)
+	{
+		cout<<"\n\t Done ! Amount Deducted\n";
+
+	}
+
+	temp_file_clear();
+
+}
+
+void Account::ministatement(int user_no)
+{
+	int number,amount,flag = 0,pbalance = 0;
+	string date,status;
+	char today[9];
+	_strdate(today);
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+
+	while(file_read)
+	{
+
+	file_read >>fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+		if(user_no == accountNumber)
+		{
+			pbalance = balance;
+		}
+	}
+
+	file_read.close();
+
+	cout<<"\n\n\n\n\n\n\n\n\n\n"<<endl;
+	cout<<"\n\t Mini statement for "<<today<<endl;
+	cout<<"\n";
+	cout<<"\n\tAccount Number : "<<accountNumber<<endl;
+	cout<<"\n\n";
+
+	ifstream tr_file_read("transec.txt" ,ios::in);
+	cout<<"\n\t"<<"Date"
+	<<" | "<<"Amount"<<" | "<<"CR / DR "<<endl;
+
+	while(tr_file_read)
+	{
+		tr_file_read >>number;
+		tr_file_read >>date;
+		tr_file_read >>amount;
+		tr_file_read >>status;
+	if(tr_file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == number)
+	{
+		cout<<"\t"<<date<<" | "<<amount
+				<<" | "<<status<<" | "<<endl ;
+		flag  = 1;
+	}
+
+
+	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+	}
+	cout<<"\n\n";
+	cout<<"Total Primary Balance :"<<pbalance<<"/."<<endl;
+	tr_file_read.close();
+
+}
+
+
+void Account::fund_tr(int user_no)
+{
+	int user2_no ,amt =0,flag = 0;
+	char ans;
+
+	cout <<"\nEnter Friends Account Numbber: ";
+	cin >> user2_no;
+
+	cout <<"\nEnter Amount : ";
+	cin >> amt;
+
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+	char tr_date[9];
+
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+	ofstream tr_write("transec.txt",ios::out | ios::app);
+	while(!file_read.eof())
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+	if(user2_no == accountNumber)
+	{
+		cout << "\nAccount Holder's name :"<<fname<< " "<<lname<<endl;
+		cout<<"enter(Y/N): ";
+		cin >>ans;
+
+		if(ans == 'n')
+		{
+			flag = 1;
 			break;
 		}
-	}while (file.good());
-	
-	file.close();
-	ofile.close();
-	remove("Bank_Record.csv");
-	rename("temp.csv","Bank_Record.csv");
+
+
+			balance = balance + amt;
+			_strdate(tr_date);
+
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+
+			tr_write<<accountNumber<<" "<<tr_date<<" "<<amt<<" "<<"CR"<<endl;
+
 	}
-	ifstream file ("Bank_Record.csv" );
-	ofstream ofile ("temp.csv" );//Aditya--------------------------------------------------------------
-	if(test == 0)
-    {
-    	cout<<"\n\n\t\tAccount doesn't Exist!";
-	}
-	cout<<"\nEnter account number where to transfer:";
-	cin>>acc_no;
-	test = 0;
-	file.seekg(0, ios::beg);
-    do
-    {
-       	getline(file,account_number, ',');
-       	getline(file, name, ',');
-       	getline(file, dob, ',');
-       	getline(file, age, ',');
-       	getline(file, address, ',');
-      	getline(file, phone, ',');
-       	getline(file, depo, ',');
-      	getline(file, acc_type, ',');
-        if(acc_no == account_number)
-    	{   
-			test = 1;
-			cout<<"Account No.:"<<account_number<<endl;
-			cout<<"Name:" <<name<<endl;			
-    		amt = atoi(depo.c_str()) + amt;
-        	y =  std::to_string(amt);
-        	file.seekg(0, ios::beg);
-        	while (file.good())
-			{	
-				getline(file,x,',');
-    			if (x == depo)
-        			ofile << y <<",";
-    			else
-        			ofile << x <<",";
-        	}
-        	cout<<"\n\tTransfer Successful!";
-        	break;
-        }
-	}while (file.good());
-	
-	file.close();
-	ofile.close();
-	remove("Bank_Record.csv");
-	rename("temp.csv","Bank_Record.csv");
-	if(test == 0)
-    {
-    	cout<<"\n\n\t\tAccount doesn't Exist!";
-	}
-	
-	login_try:
-    cout<<"\nEnter 1. For Main Menu\n\t2. For Previous Menu "
-			<<"and 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
-	}
-	else if (main_exit == 2)
+	else
 	{
-		system("cls");
-		menu_c();
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+			<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
 	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
+
 	}
-		
-}
-void fordelay(int j)
-{   int i,k;
-    for(i=0;i<j;i++)
-         k=i;
-}
 
-void close(void)
-{
-    printf("\n\n\n\nThis Program is Closed... Thank You");
-}
-
-void employee()
-{
-	char pass[10];
-    char c;
-    string s, name;
-    int i=0;
-    cout<<"\n\n\t\tFor Security Purpose:";
-    cout<<"\n\n\t\tEnter the Login Emplyoee Id:";
-    cin>>name;
-    cout<<"\n\n\t\tEnter the password to login:";
-    while(1)
+	if(flag == 1)
 	{
-    	c=getch();
-        printf("*");
-        s+=c;
-    	if(c=='\r')
-        {//Aditya--------------------------------------------------------------
-            break;
-        }    	
+		cout <<"\n NO Account Found";
 	}
- 	s = s.substr(0, s.size()-1);
-    cout<<endl;
-    if(s == "1234" && (name == "Shivam" || name == "Garima"))
-        {
-			printf("\n\nAccess Granted!\nLOADING");
-        	for(i=0;i<=6;i++)
-        	{
-            	fordelay(100000000);
-            	printf(".");
-        	}
-            	system("cls");
-            	menu_e();
-        }
-    else
-        {   printf("\n\nWrong password or Emplyoee Id!!");
-            login_try:
-            cout<<"\nEnter 1 to try again , 2 for Main Menu and"
-					<<" 0 to Exit:";
-            scanf("%d",&main_exit);
-            if (main_exit==1)
-            {
-                system("cls");
-                employee();
-            }
-            else if (main_exit==0)
-            {
-                system("cls");
-            	close();
-			}
-			else if (main_exit == 2)
-			{
-				system("cls");
-				main();
-			}
-            else
-            {
-				printf("\nInvalid!");
-                fordelay(1000000000);
-                system("cls");
-                goto login_try;
-			}
-        }
+	file_temp.close();
+	file_read.close();
+	copy_content(b,a);
+	cout<<"\n\t Done ! Amount Added\n";
+	temp_file_clear();
+
+
+	deduct(user_no,amt);
+	cout << "\n Money Successfully Transferd !";
 }
 
-void menu_e()
+
+void Account::fd(int user_no)
 {
-	int choice;
-    Bank B;
-    menu:
-    system("cls");
-    system("color 2");
-	cout<<"\n\n\t\t\tBANK RECORD SYSTEM";
-    cout<<"\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 WELCOME "
-		<<"TO THE MAIN MENU \xB2\xB2\xB2\xB2\xB2\xB2\xB2";
-    cout<<"\n\n\t\t\tEmployee Menu";
-	cout<<"\n\t\t1.Check the details of existing account\n";
-    cout<<"\t\t2.Display All Account Holder Name\n";
-	cout<<"\t\t3.Exit\n\n\n\n\n\t\t Enter your choice:";
-    cin>>choice;
-    system("cls");
-    switch(choice)
-    {
-        case 1:	B.search_rec();
-        		break;
-        case 2: B.display_all();
-        		break;
-        case 3:	close();
-        		break;
-        default :cout<<"Invalid Input!\n";
-        		cout<<"   Try Again\n";
-				goto menu;
-    }
-    login_try:
-    cout<<"\nEnter 1 for Main Menu , 2 for Previous Menu and"
-		<<" 0 to Exit:";
-            scanf("%d",&main_exit);
-            if (main_exit==1)
-            {
-                system("cls");
-                main();
-            }
-            else if (main_exit==0)
-            {
-                system("cls");
-            	close();
-			}
-			else if (main_exit == 2)
+	int flag = 0,f_plan;
+	string f_fname,f_lname,f_startdate,f_enddate;
+	int f_amount,f_finalAmount = 0,f_time;
+	float f_intrestAmount=0;
+	float f_rate = 0.06 ;
+	char tr_date[9];
+	cout<<"\n\tEnter First name for FD:";
+	cin>>f_fname;
+	cout<<"\n\tEnter Last name For FD:";
+	cin>>f_lname;
+	cout<<"\n\tEnter Amount ";
+	cin>>f_amount;
+	cout<<"\n\tenter Current Date:";
+	cin>>f_startdate;
+
+	cout<<"\n\t\tSelect Plan:\n";
+	cout<<"\n\t\t1.Fd For 12 Month Intrest rate is 6%\n";
+	cout<<"\n\t\t2.Fd For 24 Month Intrest rate is 8%\n";
+	cout<<"\n\t\t3.Fd For 36 Month Intrest rate is 10%\n";
+	cin>>f_plan;
+	cin.clear();
+
+	if(f_plan == 1)
+	{
+		f_rate=0.06;
+		f_time=1;
+	}
+	else if(f_plan == 2)
+	{
+		f_rate=0.08;
+		f_time=2;
+
+	}
+	else if(f_plan == 3)
+	{
+		f_rate=0.1;
+		f_time=3;
+	}
+	else
+	{
+		cout<<"\n\t Default 6% rate is selected !\n";
+		f_rate = 0.06;
+		f_time = 1;
+	}
+
+	f_enddate = yearadd(f_startdate,f_time);
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+	ofstream fd_file("fd.txt",ios::out | ios::app);
+	ofstream tr_write("transec.txt",ios::out | ios::app);
+
+	_strdate(tr_date);
+	while(!file_read.eof())
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == accountNumber)
+	{
+			if(balance != 0 && balance > f_amount)
 			{
-				system("cls");
-				employee();
-			}
-            else
-            {
-				printf("\nInvalid!");
-                fordelay(1000000000);
-                system("cls");
-                goto login_try;
-			}
-}
+				balance = balance - f_amount;
 
-void customer()
-{
-	char pass[10];
-    char c;//Aditya--------------------------------------------------------------
-    string s, name, acc_no, password;
-    int i=0,x;
-    system("cls");
-    cout<<"\n\n\t\t\tMENU";
-    cout<<"\n\t\t1. New Customer";
-    cout<<"\n\t\t2. Existing Customer";
-    cout<<"\n\t\tEnter Your Choice : ";
-    cin>>x;
-    if(x==1)
-    	menu_c();
-    else
-    {
-    cout<<"\n\n\t\tFor Security Purpose:";
-    cout<<"\n\n\t\tEnter the Login Customer Id:";
-    cin>>name;
-    cout<<"\n\n\t\tEnter the password to login:";
-    while(1)
-	{//Aditya--------------------------------------------------------------
-    	c=getch();
-        printf("*");
-        s+=c;
-    	if(c=='\r')
-        {
-            break;
-        }    	
-	}
- 	s = s.substr(0, s.size()-1);
-    cout<<endl;
-    ifstream is("Account_info.csv");
-    do
-    {
-       	getline(is,acc_no, ',');
-       	getline(is,password, '\n');
-       	if(acc_no == name)
-    	{
-    		i = 1;
-    		if(password == s)
-    		printf("\n\nAccess Granted!\nLOADING");
-        	for(i=0;i<=6;i++)
-        	{
-            	fordelay(100000000);
-            	printf(".");
-        	}
-            	system("cls");
-            	menu_c();
-    	}
-    }while(is.good());
-    	if(i == 0)
-        {   
-			printf("\n\nWrong password or Customer Id!!");
-            login_try:
-            cout<<"\nEnter 1 to try again , 2 for Main Menu and"
-				<<" 0 to Exit:";
-            scanf("%d",&main_exit);
-            if (main_exit==1)
-            {
-                system("cls");
-                customer();
-            }
-            else if (main_exit==0)
-            {
-                system("cls");
-            	close();
+				f_intrestAmount = f_amount * f_rate * f_time;
+
+				f_finalAmount=  f_amount + f_intrestAmount;
+
+				cout<<"\n\tIntrest rate:"<<f_rate<<"\n\tIntrest Amount:"<<f_intrestAmount
+				<<"\n\tTotal Amount When FD Completed:"<<f_finalAmount<<endl;
+
+				file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+					<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+
+				fd_file<<accountNumber<<" "<<f_fname<<" "<<f_lname<<" "<<f_startdate
+				<<" "<<f_enddate<<" "<<f_time<<" "<<f_amount
+				<<" "<<f_intrestAmount
+				<<" "<<f_finalAmount<<endl ;
+
+				tr_write<<accountNumber<<" "<<tr_date<<" "<<f_amount<<" "<<"DR"<<endl;
+				flag = 1;
 			}
-			else if (main_exit == 2)
+			else
 			{
-				system("cls");
-				main();
-			}
-            else
-            {
-				printf("\nInvalid!");
-                fordelay(1000000000);
-                system("cls");
-                goto login_try;
-			}
-        }    
-	}
-}
 
-void menu_c(void)
+				cout<<"\nFD Amount Must Be Less than Primary Balance\n! ";
+				file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+			}
+	}
+	else
+	{
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+			<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+	}
+
+	}
+
+	file_temp.close();
+	file_read.close();
+	fd_file.close();
+	copy_content(b,a);
+	if(flag == 1)
+	{
+		cout<<"\n\t Done !FD created\n";
+
+	}
+
+	temp_file_clear();
+
+
+
+
+
+}
+void Account::viewFD(int user_no)
 {
-	int choice;
-    Bank B;
-    menu:
-    system("cls");
-    system("color 2");
-	cout<<"\n\n\t\t\tBANK SYSTEM";
-    cout<<"\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 WELCOME"
-		<<" TO THE MAIN MENU \xB2\xB2\xB2\xB2\xB2\xB2\xB2";
-    cout<<"\n\n\t\t1.Create new account\n";
-    cout<<"\t\t2.Update information of existing account\n";
-    cout<<"\t\t3.For transactions\n";
-    cout<<"\t\t4.Check the details of existing account\n";
-    cout<<"\t\t5.For Transfer\n";
-    cout<<"\t\t6.Exit\n\n\n\n\n\t\t Enter your choice:";
-    cin>>choice;
+	int flag = 0,f_plan,f_number;
+	string f_fname,f_lname,f_startdate,f_enddate;
+	int f_amount,f_finalAmount = 0,f_time;
+	float f_intrestAmount=0;
+	float f_rate =0.0;
 
-    system("cls");
-    switch(choice)
-    {
-        case 1:
-				B.acc_write();
-        		break;
-        case 2:
-				B.modify_account();
-        		break;
-    	case 3:
-				B.deposit_withdraw();
-        		break;
-        case 4:
-				B.search_rec();
-        		break;
-        case 5:
-				B.transfer();
-        		break;
-        case 6://Aditya--------------------------------------------------------------
-				close();
-        		break;
-    }
-    login_try:
-    cout<<"\nEnter 1 for Main Menu , 2 for Previous Menu and"
-			<<" 0 to Exit:";
-    scanf("%d",&main_exit);
-    if (main_exit==1)
-    {
-    	system("cls");
-        main();
-    }
-    else if (main_exit==0)
-    {
-    	system("cls");
-        close();
+	ifstream fd_file_read("fd.txt" ,ios::in);
+	cout<<"\n"<<"Name"<<" |"<<"StartDate"<<" |"<<"EndDate"<<" |"
+	<<"Years"<<" |"<<"Amount"<<" |"<<"Intrest"<<" |"
+	<<"FAmount"<<endl;
+	cout<<string(60,'_');
+	while(fd_file_read)
+	{
+		fd_file_read >>f_number;
+		fd_file_read >>f_fname;
+		fd_file_read >>f_lname;
+		fd_file_read >>f_startdate;
+		fd_file_read >>f_enddate;
+		fd_file_read >>f_time;
+		fd_file_read >>f_amount;
+		fd_file_read >>f_intrestAmount;
+		fd_file_read >>f_finalAmount;
+
+
+
+
+	if(fd_file_read.eof())
+	{
+		break;
 	}
-	else if (main_exit == 2)
-	{//Aditya--------------------------------------------------------------
-		system("cls");
-		employee();
+
+	if(user_no == f_number)
+	{
+		cout<<"\n"<<f_fname<<" "<<f_lname<<" |"<<f_startdate
+				<<" |"<<f_enddate<<" |"<<f_time<<" |"<<f_amount
+				<<" |"<<f_intrestAmount
+				<<" |"<<f_finalAmount<<endl ;
+			flag  = 1;
 	}
-    else
-    {
-		printf("\nInvalid!");
-        fordelay(1000000000);
-        system("cls");
-        goto login_try;
+
+
 	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+
+	}
+	fd_file_read.close();
+
+
 }
 
+
+void Account::viewTr(int user_no)
+{
+
+	int number,amount,flag = 0;
+	string date,status;
+
+	ifstream tr_file_read("transec.txt" ,ios::in);
+	cout<<"\n\t"<<"AccountNumber"<<" | "<<"Date"
+	<<" | "<<"Amount"<<" | "<<"CR / DR "<<endl;
+
+	while(tr_file_read)
+	{
+		tr_file_read >>number;
+		tr_file_read >>date;
+		tr_file_read >>amount;
+		tr_file_read >>status;
+	if(tr_file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == number)
+	{
+		cout<<"\t"<<number<<" | "<<date<<" | "<<amount
+				<<" | "<<status<<" | "<<endl ;
+		flag  = 1;
+	}
+
+
+	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+	}
+	tr_file_read.close();
+}
+
+
+void Account ::update_details(int user_no)
+{
+	int ch;
+	char buff;
+	int flag = 0;
+	string a = "cus_details.txt";
+	string b = "temp.txt";
+
+	Account();
+	ifstream file_read("cus_details.txt" ,ios::in);
+	ofstream file_temp("temp.txt",ios::out |ios::app);
+
+	while(!file_read.eof())
+	{
+
+	file_read >> fname;
+	file_read >>lname;
+	file_read >>phone;
+	file_read >>dob;
+	file_read >>type;
+	file_read >>accountNumber;
+	file_read >>passcode;
+	file_read >>balance;
+
+	if(file_read.eof())
+	{
+		break;
+	}
+
+	if(user_no == accountNumber)
+	{
+			cout <<"\n\tAccount Number is : "<<accountNumber;
+			cout <<"\n\tFill up Details with new records :\n";
+
+			cout<<"\n\n\t New First name:";
+
+			cin >>fname;
+			cin.clear();
+
+			cout <<"\n\t New Last name:";
+			cin >> lname;
+			cin.clear();
+
+			cout <<"\n\t New  phone:";
+			cin >> phone;
+			cin.clear();
+
+			cout <<"\n\t New Dob";
+			cin >> dob;
+			cin.clear();
+
+			cout <<"\n\t Current Account Type:"<<type;
+			cout <<"\n\t Change Type (Saving S/Other O) otherwiese press (N) :";
+			char ans;
+			cin >> ans;
+			cin.clear();
+				if(tolower(ans) == 'n')
+				{
+				cout <<"\n\tOk !account type is not chenged !\n ";
+				}
+				else if(tolower(ans) == 's')
+				{
+					type = "SAVING";
+				}
+				else
+				{
+					type = "OTHER";
+				}
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+				<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+			flag  = 1;
+	}
+	else
+	{
+			file_temp << fname <<" "<<lname<<" "<< phone<<" "<<dob<<" "<<type
+			<<" "<<accountNumber<<" "<<passcode<<" "<<balance<<endl;
+	}
+
+	}
+	if(flag != 1)
+	{
+		cout << "\n\tNo record found";
+
+	}
+	file_temp.close();
+	file_read.close();
+	copy_content(b,a);
+
+	cout<<"\n\t Done ! Details Updated THank You.\n";
+	temp_file_clear();
+
+}
+
+
+void copy_content(string a,string b)
+{
+		char ch;
+		int flag = 0;
+	ifstream temp_read(a.c_str(),ios :: in);
+	ofstream file_write(b.c_str(),ios::out);
+	while(!temp_read.eof())
+	{
+		temp_read.get(ch);
+		file_write.put(ch);
+		flag = 1;
+	}
+	if(flag != 1)
+	{
+		cout <<"\n\tFile Error !";
+	}
+
+}
+
+int number_system_get()
+{
+	int number;
+	ifstream number_read("number.txt",ios::in);
+	number_read >>number;
+	return number;
+}
+
+void number_system_put(int n1)
+{
+	n1 = n1+1;
+	ofstream number_write("number.txt",ios::out);
+	number_write <<n1;
+}
+
+void temp_file_clear()
+{
+
+	char ch;
+	int flag = 0;
+	ofstream temp_write("temp.txt",ios :: out);
+
+	temp_write <<" ";
+	temp_write.close();
+
+}
+
+string yearadd(string date1,int year)
+{
+	int add ;
+	string date2;
+	stringstream ss(date1.substr(6,4));
+	 stringstream ss2(date1.substr(0,6));
+	 stringstream ss3;
+	 string s2;
+	 ss2 >> s2;
+	 ss >> add;
+	 add = add + year;
+	 ss3 << add;
+	 date2 = s2 + ss3.str();
+
+	 return date2;
+}
+
+
+void user_menu(int user_sesstion)
+{
+	int ch;
+	int amount = 0;
+	Account a;
+	start:do{
+
+		cout<<"Welcome Sir your account number is>>>>>>  "<<user_sesstion<<endl;
+		cout<<"\n\t 1.View Your Account.";
+		cout<<"\n\t 2.Update Your Details.";
+		cout<<"\n\t 3.Transfer Fund.";
+		cout<<"\n\t 4.Withdrawal.";
+		cout<<"\n\t 5.Add Money.";
+		cout<<"\n\t 6.View Transection.";
+		cout<<"\n\t 7.Close Account.";
+		cout<<"\n\t 8.Create A FD";
+		cout<<"\n\t 9.View All FD";
+		cout<<"\n\t 10.MiniStatement";
+		cout<<"\n\t 0.Exit";
+
+		cout<<"\n\t Enter your Choice (1-7)::";
+	if(cin >> ch)
+	{
+
+
+		switch (ch)
+		{
+			case 1:
+				system("cls");
+				a.searchDetails(user_sesstion);
+				break;
+
+			case 2:
+				system("cls");
+				a.update_details(user_sesstion);
+				break;
+
+			case 3:
+				system("cls");
+				a.fund_tr(user_sesstion);
+				break;
+
+			case 4:
+				cout<<"\n\tEnter Amount to withdraw :";
+				cin >> amount;
+
+				a.deduct(user_sesstion,amount);
+				break;
+
+			case 5:
+				cout<<"\n\tEnter Amount to Add :=";
+				cin >> amount;
+				a.add(user_sesstion,amount);
+				a.CurrentBalance(user_sesstion);
+				break;
+
+			case 6:
+				a.viewTr(user_sesstion);
+				break;
+
+			case 7:
+				a.delete_details();
+				break;
+			case 8:
+				a.fd(user_sesstion);
+				break;
+			case 9:
+				a.viewFD(user_sesstion);
+				break;
+			case 10:
+				a.ministatement(user_sesstion);
+				break;
+
+			default :
+				cout<<"\n\tWorng choise \n";
+				break;
+		}
+	}
+		else
+		{
+			cout<<"\n\t Input only Digits please !";
+			getch();
+			cin.clear();
+		 	cin.ignore();
+			ch = 15;
+		}
+
+
+	}while(ch != 0);
+
+}
 int main()
-{//Aditya--------------------------------------------------------------
-	int ch, i;
-	cout << "\n\n\n\n\t\t\t\tWelcome Bank System";
-	for(i=0;i<6;i++)
-    {
-        fordelay(100000000);
-        printf(".");
-    }
-	menu:
-	system("cls");
-	system("color 4");
-	cout<<"\t\t\t ---------------------"<<endl;
-	cout<<"\t\t\t|  AJGKG BANK OF INDIA |"<<endl;
-	cout<<"\t\t\t ---------------------"<<endl;
-	system("color 3");
-	cout<<"\n\n\t\t\t\t MENU\n";
-	cout<<"\n\t\t1. Employee ";
-	cout<<"\n\t\t2. Customer ";
-	cout<<"\n\t\t3. Exit ";
-	cout<<"\n\t\tEnter Your Choice: ";
-	cin>>ch;
-	switch(ch)
-	{
-		case 1: employee();
+{
+	int ch;
+	int login_state = 0;
+	int user;
+	int pass;
+	Account a;
+
+
+	do{
+		system("cls");
+
+		cout<<"\n\t\t\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"<<endl;
+		cout<<"\n\t\t| Bank management System      		  |"<<endl;
+		cout<<""<<endl;
+		cout<<"\n\t\t\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"<<endl;
+
+		cout <<"\n\t 1.Login To your Account.";
+		cout <<"\n\t 2.Open An Account.";
+		cout <<"\n\t 3.Help.";
+		cout <<"\n\t 0.Exit";
+
+		cout<<"\n\n\tEnter your choice ::";
+		if(cin >> ch )
+		{
+			switch (ch)
+			{
+				case 1:
+					cout << "\n\t Enter Account Number:";
+					cin >>user;
+					cout <<"\n\t Enter 4-digit passcode :";
+					cin >>pass;
+					system("cls");
+					a.login_user(user,pass);
+
+
 				break;
-		case 2: customer();
-				break;
-		case 3: close();
-				break;
-		default :	cout<<"Invalid Input! Try Again...\n";
-					fordelay(1000000000);
-					goto menu;
-	}
+				case 2:
+					a.createAccount();
+					break;
+
+				case 3:
+
+
+				getch();
+					break;
+
+			}
+		}
+		else
+		{
+			cout<<"\n\t Input only Digits please ! Press Enter To continue";
+			getch();
+			cin.clear();
+		 	cin.ignore();
+			ch = 15 ;
+		}
+
+
+
+	}while(ch !=0);
+	return 0;
 }
-int main_exit;
