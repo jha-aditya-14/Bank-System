@@ -1,1092 +1,719 @@
-#include <iostream>
+// Header Files
+#include <iostream>	 //inout
+#include <conio.h>	 //format
+#include <iomanip>	 //manipulators
+#include <windows.h> //console
+#include <stdlib.h>	 //console,system
+#include <time.h>
+#include <random> //account no
 #include <fstream>
-#include <cstring>
+#include <string>
 #include <string.h>
-#include <iomanip>
-#include <cstdio>
-#include <conio.h>
-#include <ctime>
-#include <stdlib.h>
-#include <bits/stdc++.h>
-#include <dos.h>
-
+#include <stdio.h>
+#include <math.h>
 using namespace std;
-
-void temp_file_clear();
-void copy_content(string a, string b);
-void number_system_put(int n1);
-int number_system_get();
-string yearadd(string date1, int year);
-void user_menu(int);
-void clrscr();
-
-void clrscr()
+// int center_X = 25;
+// int center_Y = 10;
+int Acno = 141;
+// void center_align()
+// {
+// 	COORD coord;
+// 	coord.X = center_X;
+// 	coord.Y = center_Y;
+// 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+// }
+// ostream &center(ostream &out)
+// {
+// 	center_align();
+// 	return out;
+// }
+ostream &left1(ostream &out)
 {
-	cout << string(100, '\n');
+	out.setf(ios::left);
+	out.fill('_');
+	out << setw(40);
+	return out;
 }
-
-class user
+COORD GetConsoleCursorPosition(HANDLE hConsoleOutput)
 {
-public:
-	char fname[10], lname[10];
-	string phone;
-	string dob;
-
-	user()
+	CONSOLE_SCREEN_BUFFER_INFO cbsi;
+	if (GetConsoleScreenBufferInfo(hConsoleOutput, &cbsi))
 	{
-		phone = '\0';
-		dob = '\0';
+		return cbsi.dwCursorPosition;
 	}
-	~user()
+	else
 	{
+		// The function failed. Call GetLastError() for details.
+		COORD invalid = {0, 0};
+		return invalid;
+	}
+}
+void shift(int shiftx = 0, int shifty = 0)
+{
+	HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD coord = GetConsoleCursorPosition(screen);
+	coord.X = coord.X + shiftx;
+	coord.Y = coord.Y + shifty;
+	SetConsoleCursorPosition(screen, coord);
+}
+class date_type
+{
+protected:
+	int date;
+	int month;
+	int year;
+
+public:
+	date_type(int d = 0, int m = 0, int y = 0)
+	{
+		date = d;
+		month = m;
+		year = y;
+	}
+	// friend istream &operator>>(istream &in, date_type &dt)
+	// {
+	// 	cout << "\nEnter date(dd mm yy) : ";
+	// 	in >> dt.date >> dt.month >> dt.year;
+	// 	return in;
+	// }
+	friend ostream &operator<<(ostream &out, date_type &dt)
+	{
+		cout << "Date__is__(dd mm yy)___";
+		out << dt.date << "/" << dt.month << "/" << dt.year;
+		return out;
+	}
+	void get_date()
+	{
+		cout << left1 << "Enter date(dd mm yy) : ";
+		cin >> date >> month >> year;
 	}
 };
-
-class Account : public user
+enum Branch
 {
-	int accountNumber;
+	Delhi,
+	Mumbai,
+	Chennai
+};
+enum ac_type
+{
+	Savings,
+	Current
+};
+struct login
+{
+	int acc_no;
 	int passcode;
-	int balance;
-	string type;
+	long long int phone;
+} login;
+class Bank
+{
+	char bank_name[20];
+	Branch branch_name;
+	char branch_city[20];
+	long int asset;
+
+public:
+	// Bank(char *bnk_name, char *city)
+	// {
+	// 	strcpy(bank_name, bnk_name);
+	// 	branch_name = Delhi;
+	// 	strcpy(branch_city, city);
+	// 	asset = 0;
+	// }
+};
+class basic_details
+{
+protected:
+	char fname[10];
+	char lname[10];
+	long long int phone;
+	date_type dob;
+	char res_city[10];
+	char email[30];
+
+public:
+	/* basic_details(char fn = "Null", char ln = "Null", int ph = 0, char cit = "Null")*/
+	basic_details()
+	{
+		strcpy(fname, "");
+		strcpy(lname, "");
+		phone = 0;
+		strcpy(res_city, "");
+		strcpy(email, "");
+		dob = date_type(0, 0, 0);
+	}
+};
+class Account : basic_details
+{
+	int acc_no;
+	int passcode;
+	// Branch branch;
+	long int balance;
+	date_type created_on;
+	ac_type type;
 
 public:
 	Account()
+	// // char fn = "Null",
+	// // char ln = "Null",
+	// // int ph = 0,
+	// // char cit = "Null",
+	// int ac_no = 0,
+	// int pass = 0,
+	// int bal = 0,
+	// ac_type typ = Savings) // : basic_details(fn = "Null", ln = "Null", ph = 0, cit = "Null")
 	{
-		accountNumber = 0;
-		balance = 0;
+		acc_no = 0;
 		passcode = 0;
+		balance = 0;
+		type = Savings;
+		created_on = date_type(0, 0, 0);
 	}
-	~Account() {}
-
-	void CurrentBalance(int);
-	void createAccount();
-	void showDetails();
-	void searchDetails(int);
-	void delete_details();
+	Account(Account &copy)
+	{
+		strcpy(fname, copy.fname);
+		strcpy(lname, copy.lname);
+		phone = copy.phone;
+		strcpy(res_city, copy.res_city);
+		strcpy(email, copy.email);
+		dob = copy.dob;
+		acc_no = copy.acc_no;
+		passcode = copy.passcode;
+		balance = copy.balance;
+		type = copy.type;
+		created_on = copy.created_on;
+	}
+	// Account() { cout << "\nAccount Constructed"; }
+	void create_account(int);
+	void show_account_details();
 	void update_details(int);
-	void login_user(int, int);
-	void add(int, int);
-	void deduct(int, int);
-	void fd(int);
-	void viewFD(int);
-	void viewTr(int);
-	void fund_tr(int);
-	void ministatement(int);
-	//void employee();
-	void display_all();
+	int get_passcode() { return passcode; }
+	int get_acc_no() { return acc_no; }
+	long long int get_phone() { return phone; }
+	long int get_balance() { return balance; }
+	void add_into_balance(long &amt) { balance += amt; }
+	void sub_from_balance(long &amt)
+	{
+		if (balance - amt > 0)
+		{
+			balance -= amt;
+		}
+	}
+	// const char *get_email() { return email; }
+	void get_name()
+	{
+		cout << left1 << "Enter First Name";
+		cin >> fname;
+		cout << left1 << "Enter Last Name";
+		cin >> lname;
+	}
+	void get_email()
+	{
+		cout << left1 << "Enter Email Id";
+		cin >> email;
+	}
+	void input_phone()
+	{
+	Enter_phone:
+		cin >> phone;
+		if (phone < 999999999 || phone > 9999999999)
+		{
+			cout << "Invalid Enter Again";
+			shift(-19, -1);
+			getch();
+			cout << left1 << "Enter Phone Number";
+			cout << "          ";
+			shift(-10, 0);
+			goto Enter_phone;
+		}
+		else
+		{
+			cout << "          ";
+		}
+		shift(-10);
+	}
+	void get_DOB()
+	{
+		cout << "DOB : \n";
+		dob.get_date();
+	}
+	void get_city()
+	{
+		cout << left1 << "Enter City";
+		cin >> res_city;
+	}
+	void generate_acc_no()
+	{
+		acc_no = rand() % (100) + 100;
+		cout << left1 << "Account Number is " << acc_no;
+		cout << endl;
+	}
+	void enter_passcode()
+	{
+		cout << left1 << "Enter the passcode";
+	Enter_passcode:
+		cin >> passcode;
+		if (isdigit(passcode))
+		{
+			cout << "Invalid Enter Again";
+			shift(-19, -1);
+			getch();
+			cout << left1 << "Enter the passcode";
+			cout << "          ";
+			shift(-10, 0);
+		}
+	}
+	void show_balance()
+	{
+		cout << left1 << "Current Balance" << balance;
+		cout << endl;
+	}
+	void get_type()
+	{
+		int num;
+		cout << left1 << "Type (0 for Savings, 1 for Current)";
+	Enter_type:
+		cin >> num;
+		if (num == 0)
+			type = Savings;
+		else if (num == 1)
+			type = Current;
+		else
+		{
+			cout << "Invalid Enter Again";
+			shift(-19, -1);
+			getch();
+			cout << left1 << "Type (0 for Savings, 1 for Current)";
+			cout << "\t\t\t";
+			shift(-24, 0);
+			goto Enter_type;
+		}
+	}
+	void input_creation_date()
+	{
+		cout << "Creation Date : \n";
+		created_on.get_date();
+	}
 };
-void Account ::display_all()
+void Account::create_account(int specific = 0)
 {
-	int ch;
-	int flag = 0;
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	while (file_read)
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-			cout << "\n\tAccount Number is :" << accountNumber;
-			cout << "\n\tName              :" << fname << " " << lname;
-			cout << "\n\tPhone             :" << phone;
-			cout << "\n\tDate of birth     :" << dob;
-			cout << "\n\tAccount Type      :" << type;
-			cout << "\n\tBalance           :" << balance << "/-RS.";
-			cout << "\n\n\n";
-			flag = 1;
-		if (file_read.eof())
-		{
-			break;
-		}
-		
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	file_read.close();
+	char input;
+	int digits;
+	int num;
+	cout << endl;
+	this->get_name();
+	this->get_email();
+	this->input_phone();
+	this->get_DOB();
+	this->get_city();
+	cout << "====Basic Details taken====";
+	cout << endl;
+	this->generate_acc_no();
+	this->enter_passcode();
+	this->show_balance();
+	this->get_type();
+	this->input_creation_date();
 }
-void Account ::login_user(int user, int pass)
+void Account::update_details(int amt)
 {
-	int flag = 0;
-
-	ifstream file_read("cus_details.txt", ios::in);
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-		if (file_read.eof())
-		{
-			break;
-		}
-		if (user == accountNumber && pass == passcode)
-		{
-			cout << "\n Login sucessful !" << endl;
-			user_menu(user);
-			flag = 1;
-		}
-	}
-
-	if (flag == 0)
-	{
-		cout << "\n User name & Passcode Not matched !" << endl;
-	}
-	file_read.close();
-}
-
-void Account ::createAccount()
-{
-
-	cout << "\n\tEnter your First name :";
-	cin >> fname;
-	cin.clear();
-
-	cout << "\n\tEnter Last name :";
-	cin >> lname;
-	cin.clear();
-
-	string temp_phone;
-	cout << "\n\tEnter phone number :";
-	cin >> temp_phone;
-	cin.clear();
-	if (temp_phone.length() == 10)
-	{
-		phone = temp_phone;
-	}
-	else
-	{
-
-		while (temp_phone.length() != 10)
-		{
-			cout << "phone number must be 10 digit\n";
-			cout << "\n input chone number:";
-			cin >> temp_phone;
-			phone = temp_phone;
-		}
-	}
-
-	cout << "\n\tEnter Date of Birth :";
-	cin >> dob;
-	cin.ignore();
-
-	char atype = '\0';
-	cout << "\n\tSelect Account Type(Savings S/Other O) :";
-	cin >> atype;
-	if (tolower(atype) == 's')
-	{
-		type = "SAVINGS";
-	}
-	else
-	{
-		type = "OTHER";
-	}
-	accountNumber = number_system_get();
-
-	cout << "\n\t Your Account Number :" << accountNumber;
-
-	cout << "\n\t Enter 4 digit Passcode ::";
-	cin >> passcode;
-
-	cout << "\n\t Enter Primary Balance :";
-	cin >> balance;
-
-	ofstream file("cus_details.txt", ios::out | ios ::app);
-	file << fname << " " << lname << " " << phone << " " << dob << " " << type << " " << accountNumber << " " << passcode << " " << balance << endl;
-
-	number_system_put(accountNumber);
-	file.close();
-}
-
-void Account ::CurrentBalance(int user_no)
-{
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	while (file_read)
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-
-			cout << "\n\tCurrent Balance           :" << balance << "/-RS.";
-			cout << "\n\n\n";
-		}
-	}
-
-	file_read.close();
-}
-void Account ::searchDetails(int user_no)
-{
-	int ch;
-	int flag = 0;
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	while (file_read)
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			cout << "\n\tAccount Number is :" << accountNumber;
-			cout << "\n\tName              :" << fname << " " << lname;
-			cout << "\n\tPhone             :" << phone;
-			cout << "\n\tDate of birth     :" << dob;
-			cout << "\n\tAccount Type      :" << type;
-			cout << "\n\tBalance           :" << balance << "/-RS.";
-			cout << "\n\n\n";
-			flag = 1;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	file_read.close();
-}
-void Account ::delete_details()
-{
-	char ch[10];
-	char buff;
-	int flag = 0;
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-	cout << "\n\tEnter name:";
-	cin >> ch;
-	cin.clear();
-
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-		if (strcmp(fname, ch) == 0)
-		{
-			cout << fname << " " << lname << "\t" << dob << "\t" << phone << "\t" << type
-				 << "\t" << accountNumber << "\t" << balance << endl;
-			flag = 1;
-		}
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	file_temp.close();
-	file_read.close();
-	copy_content(b, a);
-
-	cout << "\n\t Done Account Is Removed !\n";
-	temp_file_clear();
-}
-
-void Account ::add(int user_no, int amt)
-{
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-	char tr_date[9];
-
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-	ofstream tr_write("transec.txt", ios::out | ios::app);
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			balance = balance + amt;
-			_strdate(tr_date);
-
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-
-			tr_write << accountNumber << " " << tr_date << " " << amt << " "
-					 << "CR" << endl;
-		}
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-
-	file_temp.close();
-	file_read.close();
-	copy_content(b, a);
-	cout << "\n\t Done ! Amount Added\n";
-	temp_file_clear();
-}
-void Account ::deduct(int user_no, int amt)
-{
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-	char tr_date[9];
-
-	int flag = 0;
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-	ofstream tr_write("transec.txt", ios::out | ios::app);
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			if (balance != 0 && balance > amt)
-			{
-
-				balance = balance - amt;
-				_strdate(tr_date);
-
-				file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-						  << " " << accountNumber << " " << passcode << " " << balance << endl;
-
-				tr_write << accountNumber << " " << tr_date << " " << amt << " "
-						 << "DR" << endl;
-
-				flag = 1;
-			}
-			else
-			{
-
-				cout << "\nyour transection can not be completed balance is Zero or Less than wuthdrawal amount\n! ";
-				file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-						  << " " << accountNumber << " " << passcode << " " << balance << endl;
-			}
-		}
-
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-
-	file_temp.close();
-	file_read.close();
-	copy_content(b, a);
-	if (flag == 1)
-	{
-		cout << "\n\t Done ! Amount Deducted\n";
-	}
-
-	temp_file_clear();
-}
-
-void Account::ministatement(int user_no)
-{
-	int number, amount, flag = 0, pbalance = 0;
-	string date, status;
-	char today[9];
-	_strdate(today);
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-
-	while (file_read)
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			pbalance = balance;
-		}
-	}
-
-	file_read.close();
-
-	cout << "\n\n\n\n\n\n\n\n\n\n"
-		 << endl;
-	cout << "\n\t Mini statement for " << today << endl;
-	cout << "\n";
-	cout << "\n\tAccount Number : " << accountNumber << endl;
-	cout << "\n\n";
-
-	ifstream tr_file_read("transec.txt", ios::in);
-	cout << "\n\t"
-		 << "Date"
-		 << " | "
-		 << "Amount"
-		 << " | "
-		 << "CR / DR " << endl;
-
-	while (tr_file_read)
-	{
-		tr_file_read >> number;
-		tr_file_read >> date;
-		tr_file_read >> amount;
-		tr_file_read >> status;
-		if (tr_file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == number)
-		{
-			cout << "\t" << date << " | " << amount
-				 << " | " << status << " | " << endl;
-			flag = 1;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	cout << "\n\n";
-	cout << "Total Primary Balance :" << pbalance << "/." << endl;
-	tr_file_read.close();
-}
-
-void Account::fund_tr(int user_no)
-{
-	int user2_no, amt = 0, flag = 0;
-	char ans;
-
-	cout << "\nEnter Friends Account Numbber: ";
-	cin >> user2_no;
-
-	cout << "\nEnter Amount : ";
-	cin >> amt;
-
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-	char tr_date[9];
-
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-	ofstream tr_write("transec.txt", ios::out | ios::app);
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user2_no == accountNumber)
-		{
-			cout << "\nAccount Holder's name :" << fname << " " << lname << endl;
-			cout << "enter(Y/N): ";
-			cin >> ans;
-
-			if (ans == 'n')
-			{
-				flag = 1;
-				break;
-			}
-
-			balance = balance + amt;
-			_strdate(tr_date);
-
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-
-			tr_write << accountNumber << " " << tr_date << " " << amt << " "
-					 << "CR" << endl;
-		}
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-
-	if (flag == 1)
-	{
-		cout << "\n NO Account Found";
-	}
-	file_temp.close();
-	file_read.close();
-	copy_content(b, a);
-	cout << "\n\t Done ! Amount Added\n";
-	temp_file_clear();
-
-	deduct(user_no, amt);
-	cout << "\n Money Successfully Transferd !";
-}
-
-void Account::fd(int user_no)
-{
-	int flag = 0, f_plan;
-	string f_fname, f_lname, f_startdate, f_enddate;
-	int f_amount, f_finalAmount = 0, f_time;
-	float f_intrestAmount = 0;
-	float f_rate = 0.06;
-	char tr_date[9];
-	cout << "\n\tEnter First name for FD:";
-	cin >> f_fname;
-	cout << "\n\tEnter Last name For FD:";
-	cin >> f_lname;
-	cout << "\n\tEnter Amount ";
-	cin >> f_amount;
-	cout << "\n\tenter Current Date:";
-	cin >> f_startdate;
-
-	cout << "\n\t\tSelect Plan:\n";
-	cout << "\n\t\t1.Fd For 12 Month Intrest rate is 6%\n";
-	cout << "\n\t\t2.Fd For 24 Month Intrest rate is 8%\n";
-	cout << "\n\t\t3.Fd For 36 Month Intrest rate is 10%\n";
-	cin >> f_plan;
-	cin.clear();
-
-	if (f_plan == 1)
-	{
-		f_rate = 0.06;
-		f_time = 1;
-	}
-	else if (f_plan == 2)
-	{
-		f_rate = 0.08;
-		f_time = 2;
-	}
-	else if (f_plan == 3)
-	{
-		f_rate = 0.1;
-		f_time = 3;
-	}
-	else
-	{
-		cout << "\n\t Default 6% rate is selected !\n";
-		f_rate = 0.06;
-		f_time = 1;
-	}
-
-	f_enddate = yearadd(f_startdate, f_time);
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-	ofstream fd_file("fd.txt", ios::out | ios::app);
-	ofstream tr_write("transec.txt", ios::out | ios::app);
-
-	_strdate(tr_date);
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			if (balance != 0 && balance > f_amount)
-			{
-				balance = balance - f_amount;
-
-				f_intrestAmount = f_amount * f_rate * f_time;
-
-				f_finalAmount = f_amount + f_intrestAmount;
-
-				cout << "\n\tIntrest rate:" << f_rate << "\n\tIntrest Amount:" << f_intrestAmount
-					 << "\n\tTotal Amount When FD Completed:" << f_finalAmount << endl;
-
-				file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-						  << " " << accountNumber << " " << passcode << " " << balance << endl;
-
-				fd_file << accountNumber << " " << f_fname << " " << f_lname << " " << f_startdate
-						<< " " << f_enddate << " " << f_time << " " << f_amount
-						<< " " << f_intrestAmount
-						<< " " << f_finalAmount << endl;
-
-				tr_write << accountNumber << " " << tr_date << " " << f_amount << " "
-						 << "DR" << endl;
-				flag = 1;
-			}
-			else
-			{
-
-				cout << "\nFD Amount Must Be Less than Primary Balance\n! ";
-				file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-						  << " " << accountNumber << " " << passcode << " " << balance << endl;
-			}
-		}
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-
-	file_temp.close();
-	file_read.close();
-	fd_file.close();
-	copy_content(b, a);
-	if (flag == 1)
-	{
-		cout << "\n\t Done !FD created\n";
-	}
-
-	temp_file_clear();
-}
-void Account::viewFD(int user_no)
-{
-	int flag = 0, f_plan, f_number;
-	string f_fname, f_lname, f_startdate, f_enddate;
-	int f_amount, f_finalAmount = 0, f_time;
-	float f_intrestAmount = 0;
-	float f_rate = 0.0;
-
-	ifstream fd_file_read("fd.txt", ios::in);
-	cout << "\n"
-		 << "Name"
-		 << " |"
-		 << "StartDate"
-		 << " |"
-		 << "EndDate"
-		 << " |"
-		 << "Years"
-		 << " |"
-		 << "Amount"
-		 << " |"
-		 << "Intrest"
-		 << " |"
-		 << "FAmount" << endl;
-	cout << string(60, '_');
-	while (fd_file_read)
-	{
-		fd_file_read >> f_number;
-		fd_file_read >> f_fname;
-		fd_file_read >> f_lname;
-		fd_file_read >> f_startdate;
-		fd_file_read >> f_enddate;
-		fd_file_read >> f_time;
-		fd_file_read >> f_amount;
-		fd_file_read >> f_intrestAmount;
-		fd_file_read >> f_finalAmount;
-
-		if (fd_file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == f_number)
-		{
-			cout << "\n"
-				 << f_fname << " " << f_lname << " |" << f_startdate
-				 << " |" << f_enddate << " |" << f_time << " |" << f_amount
-				 << " |" << f_intrestAmount
-				 << " |" << f_finalAmount << endl;
-			flag = 1;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	fd_file_read.close();
-}
-
-void Account::viewTr(int user_no)
-{
-
-	int number, amount, flag = 0;
-	string date, status;
-
-	ifstream tr_file_read("transec.txt", ios::in);
-	cout << "\n\t"
-		 << "AccountNumber"
-		 << " | "
-		 << "Date"
-		 << " | "
-		 << "Amount"
-		 << " | "
-		 << "CR / DR " << endl;
-
-	while (tr_file_read)
-	{
-		tr_file_read >> number;
-		tr_file_read >> date;
-		tr_file_read >> amount;
-		tr_file_read >> status;
-		if (tr_file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == number)
-		{
-			cout << "\t" << number << " | " << date << " | " << amount
-				 << " | " << status << " | " << endl;
-			flag = 1;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	tr_file_read.close();
-}
-
-void Account ::update_details(int user_no)
-{
-	int ch;
-	char buff;
-	int flag = 0;
-	string a = "cus_details.txt";
-	string b = "temp.txt";
-
-	Account();
-	ifstream file_read("cus_details.txt", ios::in);
-	ofstream file_temp("temp.txt", ios::out | ios::app);
-
-	while (!file_read.eof())
-	{
-
-		file_read >> fname;
-		file_read >> lname;
-		file_read >> phone;
-		file_read >> dob;
-		file_read >> type;
-		file_read >> accountNumber;
-		file_read >> passcode;
-		file_read >> balance;
-
-		if (file_read.eof())
-		{
-			break;
-		}
-
-		if (user_no == accountNumber)
-		{
-			cout << "\n\tAccount Number is : " << accountNumber;
-			cout << "\n\tFill up Details with new records :\n";
-
-			cout << "\n\n\t New First name:";
-
-			cin >> fname;
-			cin.clear();
-
-			cout << "\n\t New Last name:";
-			cin >> lname;
-			cin.clear();
-
-			cout << "\n\t New  phone:";
-			cin >> phone;
-			cin.clear();
-
-			cout << "\n\t New Dob";
-			cin >> dob;
-			cin.clear();
-
-			cout << "\n\t Current Account Type:" << type;
-			cout << "\n\t Change Type (Saving S/Other O) otherwiese press (N) :";
-			char ans;
-			cin >> ans;
-			cin.clear();
-			if (tolower(ans) == 'n')
-			{
-				cout << "\n\tOk !account type is not chenged !\n ";
-			}
-			else if (tolower(ans) == 's')
-			{
-				type = "SAVING";
-			}
-			else
-			{
-				type = "OTHER";
-			}
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-			flag = 1;
-		}
-		else
-		{
-			file_temp << fname << " " << lname << " " << phone << " " << dob << " " << type
-					  << " " << accountNumber << " " << passcode << " " << balance << endl;
-		}
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tNo record found";
-	}
-	file_temp.close();
-	file_read.close();
-	copy_content(b, a);
-
-	cout << "\n\t Done ! Details Updated THank You.\n";
-	temp_file_clear();
-}
-
-void copy_content(string a, string b)
-{
-	char ch;
-	int flag = 0;
-	ifstream temp_read(a.c_str(), ios ::in);
-	ofstream file_write(b.c_str(), ios::out);
-	while (!temp_read.eof())
-	{
-		temp_read.get(ch);
-		file_write.put(ch);
-		flag = 1;
-	}
-	if (flag != 1)
-	{
-		cout << "\n\tFile Error !";
-	}
-}
-
-int number_system_get()
-{
-	int number;
-	ifstream number_read("number.txt", ios::in);
-	number_read >> number;
-	return number;
-}
-
-void number_system_put(int n1)
-{
-	n1 = n1 + 1;
-	ofstream number_write("number.txt", ios::out);
-	number_write << n1;
-}
-
-void temp_file_clear()
-{
-
-	char ch;
-	int flag = 0;
-	ofstream temp_write("temp.txt", ios ::out);
-
-	temp_write << " ";
-	temp_write.close();
-}
-
-string yearadd(string date1, int year)
-{
-	int add;
-	string date2;
-	stringstream ss(date1.substr(6, 4));
-	stringstream ss2(date1.substr(0, 6));
-	stringstream ss3;
-	string s2;
-	ss2 >> s2;
-	ss >> add;
-	add = add + year;
-	ss3 << add;
-	date2 = s2 + ss3.str();
-
-	return date2;
-}
-
-void user_menu(int user_sesstion)
-{
-	int ch;
-	int amount = 0;
-	Account a;
-start:
+	int choice;
 	do
 	{
-
-		cout << "Welcome Sir your account number is>>>>>>  " << user_sesstion << endl;
-		cout << "\n\t 1.View Your Account.";
-		cout << "\n\t 2.Update Your Details.";
-		cout << "\n\t 3.Transfer Fund.";
-		cout << "\n\t 4.Withdrawal.";
-		cout << "\n\t 5.Add Money.";
-		cout << "\n\t 6.View Transection.";
-		cout << "\n\t 7.Close Account.";
-		cout << "\n\t 8.Create A FD";
-		cout << "\n\t 9.View All FD";
-		cout << "\n\t 10.MiniStatement";
-		cout << "\n\t 0.Exit";
-
-		cout << "\n\t Enter your Choice (1-7)::";
-		if (cin >> ch)
+		cout << "1.Update Name" << endl
+			 << "2.Update Email ID" << endl
+			 << "3.Update Phone Number" << endl
+			 << "4.Update DOB" << endl
+			 << "5.Update City" << endl
+			 << "6.Update Passcode" << endl
+			 << "7.Update Type" << endl
+			 << "8.Exit" << endl
+			 << "\nEnter choice : ";
+		cin >> choice;
+		switch (choice)
 		{
+		case 1:
 
-			switch (ch)
+			this->get_name();
+			break;
+		case 2:
+			this->get_email();
+			break;
+		case 3:
+			this->input_phone();
+			break;
+		case 4:
+			this->get_DOB();
+			break;
+		case 5:
+			this->get_city();
+			break;
+		case 6:
+			this->enter_passcode();
+			break;
+		case 7:
+			this->get_type();
+			break;
+		default:
+			break;
+		}
+	} while (choice != 8);
+}
+void Account::show_account_details()
+{
+	system("cls");
+	cout << left1 << "First Name" << fname << endl;
+	cout << left1 << "Last Name" << lname << endl;
+	cout << left1 << "Email ID" << email << endl;
+	cout << left1 << "Phone Number " << phone << endl;
+	cout << left1 << "Residing City" << res_city << endl;
+	cout << "Date_of_Birth___:" << dob << endl;
+	cout << left1 << "Account Number" << acc_no << endl;
+	cout << "passcode" << passcode << endl;
+	cout << left1 << "Balance" << balance << endl;
+	cout << left1 << "Type";
+	(type == Savings) ? cout << "Savings" : cout << "Current";
+	cout << endl;
+	cout << "Account_Opening_:" << created_on << endl;
+}
+void save_into_file(Account &obj, long pos = -1)
+{
+	ofstream file;
+	file.open("Account_data.dat", ios::out | ios::binary);
+	if (pos < 0)
+	{
+		file.seekp(ios::end);
+	}
+	else if (pos >= 0)
+	{
+		file.seekp(pos);
+	}
+	file.write((char *)&obj, sizeof(obj));
+	file.close();
+}
+void read_from_file(Account &obj, long pos = -1)
+{
+	ifstream file;
+	file.open("Account_data.dat", ios::in | ios::binary);
+	file.read((char *)&obj, sizeof(obj));
+	while (!file.eof())
+	{
+		if (pos < 0)
+		{
+			obj.show_account_details();
+			getch();
+			file.read((char *)&obj, sizeof(obj));
+		}
+		else if (file.tellg() == pos)
+		{
+			obj.show_account_details();
+			getch();
+			file.read((char *)&obj, sizeof(obj));
+			break;
+		}
+	}
+	file.close();
+	// return obj;
+}
+long search(int pass, long long input, int hide = 0)
+{
+	int flag = 0;
+	cout << endl;
+	long pos;
+	Account obj;
+	ifstream file;
+	file.open("Account_data.dat", ios::in | ios::binary);
+	pos = file.tellg();
+	file.read((char *)&obj, sizeof(obj));
+	while (!file.eof())
+	{
+		if (
+			obj.get_passcode() == pass &&
+			((obj.get_acc_no() == (int)input) || (obj.get_phone() == input)))
+		{
+			if (!hide)
 			{
-			case 1:
-				system("cls");
-				a.searchDetails(user_sesstion);
-				break;
-
-			case 2:
-				system("cls");
-				a.update_details(user_sesstion);
-				break;
-
-			case 3:
-				system("cls");
-				a.fund_tr(user_sesstion);
-				break;
-
-			case 4:
-				cout << "\n\tEnter Amount to withdraw :";
-				cin >> amount;
-
-				a.deduct(user_sesstion, amount);
-				break;
-
-			case 5:
-				cout << "\n\tEnter Amount to Add :=";
-				cin >> amount;
-				a.add(user_sesstion, amount);
-				a.CurrentBalance(user_sesstion);
-				break;
-
-			case 6:
-				a.viewTr(user_sesstion);
-				break;
-
-			case 7:
-				a.delete_details();
-				break;
-			case 8:
-				a.fd(user_sesstion);
-				break;
-			case 9:
-				a.viewFD(user_sesstion);
-				break;
-			case 10:
-				a.ministatement(user_sesstion);
-				break;
-
-			default:
-				cout << "\n\tWorng choise \n";
-				break;
+				cout << "\nAccount Found ";
+				cout << "\n\nDetails========\n";
+				obj.show_account_details();
 			}
+			getch();
+			flag = 1;
+			file.close();
+			return pos;
+		}
+		pos = file.tellg();
+		file.read((char *)&obj, sizeof(obj));
+	}
+	if (flag == 0)
+	{
+		if (!hide)
+		{
+			cout << endl
+				 << left1 << "Record Not Found";
+			getch();
+		}
+		file.close();
+	}
+	return -1;
+}
+long search(int hide = 0)
+{
+	int pass;
+	int choice;
+	long long int input;
+	system("cls");
+	cout << "1.Search Using passcode - account number" << endl
+		 << "2.Search Using passcode - phone number" << endl;
+	cin >> choice;
+	switch (choice)
+	{
+	case 1:
+		cout << left1 << "Enter Acc_no";
+		cin >> input;
+		cout << left1 << "Enter Passcode";
+		cin >> pass;
+		break;
+	case 2:
+		cout << left1 << "Enter Phone number";
+		cin >> input;
+		cout << left1 << "Enter Passcode";
+		cin >> pass;
+		break;
+	}
+	return search(pass, input, hide);
+}
+int delete_from_file()
+{
+	// int pass, input;
+	char choice;
+	long int del_pos;
+	long int read_pos;
+	del_pos = search();
+	cout << del_pos;
+	if (del_pos < 0)
+	{
+		return 0;
+	}
+	Account obj;
+	fstream file, file1;
+	file.open("Account_data.dat", ios::in | ios::binary);
+	file1.open("Account_data1.dat", ios::out | ios::binary);
+	// file1.open("Account_data.dat", ios::out | ios::binary);
+	cout << "\nConfirm delete";
+	cin >> choice;
+	read_pos = file.tellg();
+	file.read((char *)&obj, sizeof(obj));
+	while (!file.eof())
+	{
+		if ((choice == 'y' || choice == 'Y') && (del_pos == read_pos))
+		{
+			cout << "\nDeleted\n";
+			getch();
 		}
 		else
 		{
-			cout << "\n\t Input only Digits please !";
-			getch();
-			cin.clear();
-			cin.ignore();
-			ch = 15;
+			file1.write((char *)&obj, sizeof(obj));
 		}
-
-	} while (ch != 0);
+		read_pos = file.tellg();
+		file.read((char *)&obj, sizeof(obj));
+	}
+	file.close();
+	file1.close();
+	remove("Account_data.dat");
+	rename("Account_data1.dat", "Account_data.dat");
+	getch();
+	return 0;
 }
-void employee();
-
-void customer()
+long get_cur_balance()
+{
+	Account obj;
+	long pos = search(1);
+	fstream file;
+	file.open("Account_data.dat", ios::in | ios::binary);
+	file.seekg(pos);
+	file.read((char *)&obj, sizeof(obj));
+	cout << endl
+		 << left1 << "Balance is " << obj.get_balance();
+	getch();
+	file.close();
+	return pos;
+}
+void add_balance(int flag = 1)
+{
+	Account obj;
+	long amt;
+	long pos = search();
+	cout << pos;
+	if (flag > 0)
+	{
+		cout << "\n\nEnter Amount to be added : ";
+	}
+	else
+	{
+		cout << "\n\nEnter Amount to be deducted : ";
+	}
+	cin >> amt;
+	amt = fabs(amt);
+	if (flag < 0)
+	{
+		amt *= -1;
+	}
+	fstream file;
+	file.open("Account_data.dat", ios::in | ios::out | ios::binary);
+	file.seekg(pos);
+	file.read((char *)&obj, sizeof(obj));
+	obj.add_into_balance(amt);
+	cout << endl
+		 << left1 << "Balance now is " << obj.get_balance();
+	getch();
+	file.seekg(pos);
+	file.write((char *)&obj, sizeof(obj));
+	file.close();
+}
+void deduct_balance()
+{
+	add_balance(-1);
+}
+// void update_details()
+void mini_statement()
+{
+	Account obj;
+	long pos = search(1);
+	fstream file;
+	file.open("Account_data.dat", ios::in | ios::binary);
+	file.seekg(pos);
+	file.read((char *)&obj, sizeof(obj));
+	cout << "\n\t Mini statement for "
+		 << "today" << endl;
+	cout << "\nAccount Number : " << obj.get_acc_no() << endl;
+	cout << "\nTransaction part is incomplete";
+	getch();
+	file.close();
+}
+int login_user(int acc_no = 0, int passcode = 0, long long int phone = 0)
+{
+	fstream file("Login.dat", ios::in | ios::out | ios::binary);
+	file.read((char *)&login, sizeof(login));
+	while (!file.eof())
+	{
+		if (login.acc_no == acc_no &&
+			(login.passcode == passcode || login.phone == phone))
+		{
+			file.close();
+			return 1;
+		}
+		file.read((char *)&login, sizeof(login));
+	}
+	file.close();
+	return 0;
+}
+void fund_transfer()
+{
+	int acno;
+	Account obj;
+	long amt;
+	long pos;
+	cout << "\nEnter Receiptent account no";
+	cin >> acno;
+	cout << "\nAmount";
+	cin >> amt;
+	fstream file("Account_data.dat", ios::in | ios::out | ios::binary);
+	pos = file.tellg();
+	file.read((char *)&obj, sizeof(obj));
+	while (!file.eof())
+	{
+		if (obj.get_acc_no() == acno)
+		{
+			obj.add_into_balance(amt);
+			file.seekg(pos);
+			file.write((char *)&obj, sizeof(obj));
+		}
+		if (obj.get_acc_no() == Acno)
+		{
+			obj.sub_from_balance(amt);
+			file.seekg(pos);
+			file.write((char *)&obj, sizeof(obj));
+		}
+		pos = file.tellg();
+		file.read((char *)&obj, sizeof(obj));
+	}
+	cout << "\nFund Transfered";
+}
+void menu()
+{
+	Account obj;
+	int choice = 0;
+	do
+	{
+		system("cls");
+		cout << "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" << endl;
+		cout << "| Bank management System|" << endl;
+		// cout << "" << endl;
+		cout << "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" << endl;
+		cout << "WELCOME TO THE MAIN MENU:\n";
+		cout << "1.Create new account" << endl
+			 << "2.Show Account Details" << endl
+			 << "3.Search within Account Details" << endl
+			 << "4.Update account details" << endl
+			 << "5.Delete Existing Account " << endl
+			 << "6.Get balance of Account" << endl
+			 << "7.Add balance into Account " << endl
+			 << "8.Withdraw from Account " << endl
+			 << "9.Get a Mini Statement " << endl
+			 << "10.Transfer Fund" << endl
+			 /*<<  "2.Update information of existing account" << endl
+			 << "3.For transactions" << endl
+			 << "4.Check the details of existing account" << endl
+			 << "5.Removing existing account" << endl
+			 << "6.View customer's list" << endl*/
+			 << "0.Exit\n\n\nEnter your choice:";
+		cin >> choice;
+		switch (choice)
+		{
+		case 1:
+			obj.create_account();
+			save_into_file(obj);
+			break;
+		case 2:
+			read_from_file(obj);
+			break;
+		case 3:
+			search();
+			break;
+		case 4:
+			long pos = search();
+			read_from_file(obj, pos);
+			obj.update_details();
+			save_into_file(obj, pos);
+			break;
+		case 5:
+			delete_from_file();
+			break;
+		case 6:
+			get_cur_balance();
+			break;
+		case 7:
+			add_balance();
+			break;
+		case 8:
+			deduct_balance();
+			break;
+		case 9:
+			mini_statement();
+			break;
+		case 10:
+			fund_transfer();
+			break;
+		default:
+			break;
+		}
+	} while (choice != 0);
+}
+int main()
 {
 	int ch;
-	int login_state = 0;
-	int user;
+	int acno;
 	int pass;
-	Account a;
-
 	do
 	{
 		system("cls");
@@ -1108,167 +735,165 @@ void customer()
 			{
 			case 1:
 				cout << "\n\t Enter Account Number:";
-				cin >> user;
+				cin >> acno;
 				cout << "\n\t Enter 4-digit passcode :";
 				cin >> pass;
 				system("cls");
-				a.login_user(user, pass);
-
+				if (login_user(acno, pass))
+					menu();
 				break;
 			case 2:
-				a.createAccount();
-				break;
-
-			case 3:
-
-				getch();
+				// createAccount();
+				// break;
+			default:
 				break;
 			}
 		}
-		else
-		{
-			cout << "\n\t Input only Digits please ! Press Enter To continue";
-			getch();
-			cin.clear();
-			cin.ignore();
-			ch = 15;
-		}
 
 	} while (ch != 0);
-	//return 0;
+	menu();
+	return 0;
 }
+/*	// void SetConsoleColor(WORD COLOR)
+	// {
+	// 	HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+	// 	SetConsoleTextAttribute(screen, COLOR);
+	// }
 
-int main()
-{ //Aditya----------------
-	//Account a;
-	int ch, i;
-	cout << "\n\n\n\n\t\t\t\tWelcome Bank System";
-	for (i = 0; i < 6; i++)
-	{
-		//        delay(100000000);
-		printf(".");
-	}
-menu:
-	system("cls");
-	system("color 4");
-	cout << "\t\t\t ---------------------" << endl;
-	cout << "\t\t\t|  AJGKG OF INDIA |" << endl;
-	cout << "\t\t\t ---------------------" << endl;
-	system("color 3");
-	cout << "\n\n\t\t\t\t MENU\n";
-	cout << "\n\t\t1. Employee ";
-	cout << "\n\t\t2. Customer ";
-	cout << "\n\t\t3. Exit ";
-	cout << "\n\t\tEnter Your Choice: ";
-	cin >> ch;
-	switch (ch)
-	{
-	case 1:
-		employee();
-		break;
-	case 2:
-		customer();
-		break;
-	case 3:
-		system("exit");
-		break;
-	default:
-		cout << "Invalid Input! Try Again...\n";
-		goto menu;
-	}
-}
+	// void gotoxy(int x, int y)
+	// {
 
-void employee()
-{
-	char pass[10];
-	char c;
-	string s, name;
-	int i = 0;
-	int choice;
-	int main_exit;
-	Account a;
-	cout << "\n\n\t\tFor Security Purpose:";
-	cout << "\n\n\t\tEnter the Login Emplyoee Id:";
-	cin >> name;
-	cout << "\n\n\t\tEnter the password to login:";
-	while (1)
+	// 	HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+	// 	COORD max_size = GetLargestConsoleWindowSize(screen);
+	// 	COORD pos;
+	// 	SetConsoleColor(BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY);
+	// 	pos.X = (max_size.X - 20) / 2;
+	// 	pos.Y = (0);
+	// 	SetConsoleCursorPosition(screen, pos);
+	// }
+
+	void center(int x = center_X, int y = center_Y)
 	{
-		c = getch();
-		printf("*");
-		s += c;
-		if (c == '\r')
-		{ //Aditya------------------------------
-			break;
-		}
+		HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+		// COORD max_size = GetLargestConsoleWindowSize(screen);
+		COORD pos;
+		pos.X = x;
+		pos.Y = y;
+		// pos.X = ((max_size.X * 2 / 5) + x);
+		// pos.Y = ((max_size.Y / 3) + y);
+		SetConsoleCursorPosition(screen, pos);
 	}
-	s = s.substr(0, s.size() - 1);
-	cout << endl;
-	if (s == "1234" && (name == "admin"))
+
+	void Color(int color, int j = 0)
 	{
-		printf("\n\nAccess Granted!\nLOADING");
-		
-		for (i = 0; i <= 6; i++)
-		{
-			printf(".");
-		}
-		system("cls");
-		cout << "Successful!!";
-		system("cls");
-		system("color 2");
-		begin:
-		cout << "\n\n\t\t\tBANK RECORD SYSTEM";
-		cout << "\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 WELCOME "
-			 << "TO THE MAIN MENU \xB2\xB2\xB2\xB2\xB2\xB2\xB2";
-		cout << "\n\n\t\t\tEmployee Menu";
-		cout << "\n\t\t1.Check the details of existing account\n";
-		cout << "\t\t2.Display All Account Holder Name\n";
-		cout << "\t\t3.Exit\n\n\n\n\n\t\t Enter your choice:";
-		cin >> choice;
-		system("cls");
-		
-		switch (choice)
-		{
-		case 2:
-			a.display_all();
-			goto begin;
-			break;
-		case 1:
-			int number;
-			cout << "\nEnter your Account Number : ";
-			cin >> number;
-			a.searchDetails(number);
-			
-			goto begin;
-			break;
-		}
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color | j);
 	}
-	else
+	int main()
 	{
-		printf("\n\nWrong password or Emplyoee Id!!");
-	login_try:
-		cout << "\nEnter 1 to try again , 2 for Main Menu and"
-			 << " 0 to Exit:";
-		cin >> main_exit;
-		if (main_exit == 1)
-		{
-			system("cls");
-			employee();
-		}
-		else if (main_exit == 0)
-		{
-			system("cls");
-			system("exit");
-		}
-		else if (main_exit == 2)
-		{
-			system("cls");
-			main();
-		}
-		else
-		{
-			printf("\nInvalid!");
-			system("cls");
-			goto login_try;
-		}
+		center();
+		cout << "Hello\n";
+		system("pause");
 	}
-}
+*/
+/*	// struct date_type
+	// {
+	// 	int date_type;
+	// 	int month;
+	// 	int year;
+	// };
+	// class Account
+	// {
+	// 	char name[60];
+	// 	int acc_no, age;
+	// 	char address[60];
+	// 	char citizenship[15];
+	// 	double phone;
+	// 	char acc_type[10];
+	// 	float amt;
+	// 	date_type dob;
+	// 	date_type deposit;
+	// 	date_type withdraw;
+
+	// 	float interest(float t, float amount, int rate)
+	// 	{
+	// 		float SI;
+	// 		SI = (rate * t * amount) / 100.0;
+	// 		return (SI);
+	// 	}
+	// };
+
+	// void close(void)
+	// {
+	// 	cout << "End of the project......";
+	// }
+
+	// void menu(void)
+	// {
+	// 	int choice;
+	// 	system("cls");
+	// 	center();
+	// 	cout << "BANKING MANAGEMENT SYSTEM\n\n\n";
+	// 	cout << "WELCOME TO THE MAIN MENU:\n";
+	// 	cout << "\n1:Create new Account\n2.Update_type information of existing Account\n3.For transactions\n4.Check the details of existing Account\n5.Removing existing Account\n6.View Account's list\n7.Exit\n\n\n\n\nEnter your choice : ";
+	// 	cin >> choice;
+	// 	// switch (choice)
+	// 	// {
+	// 	// case 1:
+	// 	// 	new_acc();
+	// 	// 	break;
+	// 	// case 2:
+	// 	// 	edit();
+	// 	// 	break;
+	// 	// case 3:
+	// 	// 	transact();
+	// 	// 	break;
+	// 	// case 4:
+	// 	// 	see();
+	// 	// 	break;
+	// 	// case 5:
+	// 	// 	erase();
+	// 	// 	break;
+	// 	// case 6:
+	// 	// 	view_list();
+	// 	// 	break;
+	// 	// case 7:
+	// 	// 	close();
+	// 	// 	break;
+	// 	// }
+	// }
+	// int main_exit;
+	// int main()
+	// {
+	// 	char pass, password("123");
+	// 	center(-20, 0);
+	// 	cout << "Enter Login Password ... ";
+	// 	cin >> pass;
+	// 	if (pass.compare(password) == 0)
+	// 	{
+	// 		cout << "\n\nPassword Match!";
+	// 		cout << "\nGoto The Next Step.....";
+	// 		menu();
+	// 	}
+	// 	else
+	// 	{
+	// 		cout << "\n\nWrong password!!\a\a\a";
+	// 	login_try:
+	// 		cout << "\nEnter 1 to try again and 0 to exit:";
+	// 		cin >> main_exit;
+	// 		if (main_exit == 1)
+	// 		{
+	// 			main();
+	// 		}
+	// 		else if (main_exit == 0)
+	// 		{
+	// 			close();
+	// 		}
+	// 		else
+	// 		{
+	// 			cout << "\nInvalid!";
+	// 			goto login_try;
+	// 		}
+	// 	}
+	// 	return 0;
+	// }
+*/
