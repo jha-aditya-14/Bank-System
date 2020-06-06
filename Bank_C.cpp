@@ -9,7 +9,6 @@ struct date
 };
 struct
 {
-
     char name[60];
     int acc_no, age;
     char address[60];

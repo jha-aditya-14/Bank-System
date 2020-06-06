@@ -65,11 +65,11 @@ int main()
 // 		cout << " i= : ";
 // 	}
 // }
-// HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
-// COORD max_size = GetLargestConsoleWindowSize(screen);
-// COORD pos;
-// SetConsoleColors(BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY);
-//Account a;
-// pos.X = (max_size.X - 20) / 2;
-// pos.Y = (0);
-// SetConsoleCursorPosition(screen, pos);
+HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+COORD max_size = GetLargestConsoleWindowSize(screen);
+COORD pos;
+SetConsoleColors(BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY);
+Account a;
+pos.X = (max_size.X - 20) / 2;
+pos.Y = (0);
+SetConsoleCursorPosition(screen, pos);
